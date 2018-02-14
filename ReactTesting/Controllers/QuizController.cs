@@ -26,8 +26,7 @@ namespace ReactTesting.Controllers
         async public Task<IActionResult> GetQuestions()
         {
             //QuizHub.questions = await dataManager.GetQuestionsFromAPIAsync(5);
-            var questions = await dataManager.GetQuestionsFromAPIAsync(5);
-            questions.DecodeUTF8Elements();
+            var questions = await dataManager.GetQuestionsFromAPIAsync(2);
             return Ok(questions);
         }
 

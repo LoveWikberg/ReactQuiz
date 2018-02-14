@@ -25,6 +25,11 @@ namespace ReactTesting.ExtensionMethods
             }
         }
 
+        /// <summary>
+        /// Decode all occurrences of strings
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
         public static void DecodeUTF8Elements<T>(this IList<T> list)
         {
             foreach (var item in list)
@@ -37,25 +42,21 @@ namespace ReactTesting.ExtensionMethods
                     {
                         string propToDecode = prop.GetValue(item).ToString();
                         propToDecode = WebUtility.HtmlDecode(propToDecode);
+                        propToDecode = WebUtility.UrlDecode(propToDecode);
                         prop.SetValue(item, propToDecode);
                     }
                     else if (prop.PropertyType == typeof(List<string>))
                     {
-                        foreach (var att in prop.CustomAttributes)
+                        var propertyList = (List<string>)prop.GetValue(item);
+                        for (int i = 0; i < propertyList.Count; i++)
                         {
-                            string b = "asd";
+                            propertyList[i] = WebUtility.HtmlDecode(propertyList[i]);
+                            propertyList[i] = WebUtility.UrlDecode(propertyList[i]);
                         }
+                        prop.SetValue(item, propertyList);
                     }
                 }
             }
         }
-
-        //private IList<string> DecodeCollectionOfStrings(PropertyInfo prop)
-        //{
-        //    foreach (var item in prop.)
-        //    {
-
-        //    }
-        //}
     }
 }

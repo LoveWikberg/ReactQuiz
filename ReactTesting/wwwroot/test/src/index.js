@@ -4,6 +4,9 @@ import { HubConnection } from '@aspnet/signalr-client';
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
 import { StartScreen } from './Start/StartScreen';
+import { Score } from './Quiz/score';
+//import 'bootstrap/dist/css/bootstrap.css';
+import '../node_modules/reactstrap/dist/reactstrap.cjs'
 
 class Game extends React.Component {
 
@@ -12,7 +15,8 @@ class Game extends React.Component {
 
         this.state = {
             nick: '',
-            hubConnection: null
+            hubConnection: null,
+            players: [],
         };
     }
 
@@ -23,27 +27,49 @@ class Game extends React.Component {
         this.setState({ hubConnection, nick }, () => {
             this.state.hubConnection
                 .start()
-                .then(() => console.log('Connection started!'))
+                .then(() => console.log("connected"))
                 .catch(err => console.log('Error while establishing connection :('));
 
             this.state.hubConnection.on('sendQuestion', (question) => {
                 console.log(question);
                 this.renderQuestion(question);
             });
+
+            this.state.hubConnection.on('showAnswers', (players) => {
+                this.renderScoreBoard(players);
+            });
         });
-
-
     }
+
+   
+
+    addPlayer() {
+        this.state.hubConnection.invoke('addPlayer', this.state.nick);
+        alert("added player");
+    }
+
+    resetAll(){
+    this.state.hubConnection.invoke('resetGame');
+        alert("Reseted");
+}
 
     renderStartScreen() {
         // Use this instead of reactDOm.render()
         //ReactDOM.hydrate(element, container[, callback])
     }
 
+    renderScoreBoard(players) {
+        ReactDOM.hydrate(
+            <div>
+                <Score players={players} hubConnection={this.state.hubConnection} />
+            </div>
+            , document.getElementById('root'));
+    }
+
     renderQuestion(question) {
         ReactDOM.hydrate(
             <div>
-                <Quiz question={question} />
+                <Quiz question={question} hubConnection={this.state.hubConnection}/>
             </div>
             , document.getElementById('root'));
     }
@@ -51,6 +77,8 @@ class Game extends React.Component {
     render() {
         return (
             <div>
+                <button onClick={() => this.addPlayer()} >Connect</button>
+                <button onClick={() => this.resetAll()} >Reset all</button>
                 < StartScreen hubConnection={this.state.hubConnection} />
             </div>
         );

@@ -1,0 +1,11 @@
+D:\Programmering\ReactTesting\ReactTesting\bin\Any CPU\Release\netcoreapp2.0\ReactTesting.deps.json
+D:\Programmering\ReactTesting\ReactTesting\bin\Any CPU\Release\netcoreapp2.0\ReactTesting.runtimeconfig.json
+D:\Programmering\ReactTesting\ReactTesting\bin\Any CPU\Release\netcoreapp2.0\ReactTesting.runtimeconfig.dev.json
+D:\Programmering\ReactTesting\ReactTesting\bin\Any CPU\Release\netcoreapp2.0\ReactTesting.dll
+D:\Programmering\ReactTesting\ReactTesting\bin\Any CPU\Release\netcoreapp2.0\ReactTesting.pdb
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.csprojResolveAssemblyReference.cache
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.csproj.CoreCompileInputs.cache
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.AssemblyInfoInputs.cache
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.AssemblyInfo.cs
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.dll
+D:\Programmering\ReactTesting\ReactTesting\obj\Any CPU\Release\netcoreapp2.0\ReactTesting.pdb
