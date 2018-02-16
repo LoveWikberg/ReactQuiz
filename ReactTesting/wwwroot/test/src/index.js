@@ -1,11 +1,12 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 //import { HubConnection } from '@aspnet/signalr-client';
-import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js'
+import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js';
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
 import { StartScreen } from './Start/StartScreen';
 import { Score } from './Quiz/score';
+import { GameEnd } from './Quiz/gameEnd';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container, Row, Col } from 'reactstrap';
 
@@ -20,7 +21,7 @@ class Game extends React.Component {
         this.state = {
             nick: '',
             hubConnection: null,
-            players: [],
+            players: []
         };
     }
 
@@ -42,6 +43,21 @@ class Game extends React.Component {
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderScoreBoard(players);
             });
+            this.state.hubConnection.on('gameDraw', (players, drawers) => {
+                var endMessage = "And the winner is... there is no winner. It's a draw between";
+                for (var i = 0; i < drawers.length; i++) {
+                    if (i === drawers.length - 2)
+                        endMessage += " " + drawers[i];
+                    else if (i === drawers.length - 1)
+                        endMessage += " and " + drawers[i];
+                    else
+                        endMessage += " " + drawers[i] + ",";
+                }
+                this.renderGameEnd(players, endMessage);
+            });
+            this.state.hubConnection.on('gameWon', (players, winner) => {
+                this.renderGameEnd(players, "And the winner is... " + winner);
+            });
         });
     }
 
@@ -53,6 +69,18 @@ class Game extends React.Component {
     resetAll() {
         this.state.hubConnection.invoke('resetGame');
         alert("Reseted");
+    }
+
+    renderGameEnd(players, endMessage) {
+        ReactDOM.hydrate(
+            <Container>
+                <Row>
+                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
+                        <GameEnd endMessage={endMessage} players={players} />
+                    </Col>
+                </Row>
+            </Container>
+            , document.getElementById('root'));
     }
 
     renderStartScreen() {

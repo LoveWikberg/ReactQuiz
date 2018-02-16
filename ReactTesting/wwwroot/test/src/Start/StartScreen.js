@@ -24,7 +24,7 @@ export class StartScreen extends React.Component {
         return (
             <div>
                 <h1>Hur många frågor?</h1>
-                <input type="number" min="10" max="25" value={this.state.numberOfQuestions}
+                <input type="number" min="3" max="25" value={this.state.numberOfQuestions}
                     onChange={e => this.setNumberOfQuestions(e.target.value)} ></input>
                 <input type="button" value="Start" onClick={() => this.startGame()} ></input>
             </div>

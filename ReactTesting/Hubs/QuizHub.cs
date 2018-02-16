@@ -52,15 +52,67 @@ namespace ReactTesting.Hubs
                 SetPoints();
                 if (RoundCount >= 3)
                 {
-                    await ShowAnswers();
-                    RoundCount = 0;
+                    if (questions.Count != 0)
+                    {
+                        await ShowAnswers();
+                        RoundCount = 0;
+                    }
+                    else
+                    {
+                        await GameEnded();
+                    }
                 }
                 else
                 {
-                    await SendQuestion();
+                    if (questions.Count != 0)
+                    {
+                        await SendQuestion();
+                    }
+                    else
+                    {
+                        await GameEnded();
+                    }
                 }
                 ResetPlayerAnswers();
             }
+        }
+
+        async Task GameEnded()
+        {
+            int highestScore = players.Max(p => p.Points);
+            if (IsDraw(highestScore))
+            {
+                string[] drawers = players.Where(p => p.Points == highestScore)
+                    .Select(p => p.Name).ToArray();
+                await Clients.All.InvokeAsync("gameDraw", players
+                    .OrderByDescending(p => p.Points), drawers);
+            }
+            else
+            {
+                string winner = players.SingleOrDefault(p => p.Points == highestScore).Name;
+                await Clients.All.InvokeAsync("gameWon", players
+                    .OrderByDescending(p => p.Points), winner);
+            }
+        }
+
+        bool IsDraw(int score)
+        {
+            var playersWithHighestScore = players
+              .Where(p => p.Points == score);
+            if (playersWithHighestScore.Count() > 1)
+                return true;
+            else
+                return false;
+        }
+
+        T GetWinnerOrDraw<T>(int highestScore)
+        {
+            var playersWithHighestScore = players
+                .Where(p => p.Points == highestScore).ToArray();
+            if (playersWithHighestScore.Length > 1)
+                return (T)(object)playersWithHighestScore[0];
+            else
+                return (T)(object)playersWithHighestScore;
         }
 
         async public Task ShowAnswers()
