@@ -1,13 +1,15 @@
 {
-  "name": "test",
+  "name": "testbylowick",
   "version": "0.1.0",
   "dependencies": {
     "@aspnet/signalr-client": "^1.0.0-alpha2-final",
+    "bootstrap": "^4.0.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-native-signalr": "^1.0.6",
     "react-scripts": "1.1.0",
-    "reactstrap": "^5.0.0-beta"
+    "reactstrap": "^5.0.0-beta",
+    "repair": "^0.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

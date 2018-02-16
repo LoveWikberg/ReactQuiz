@@ -6,22 +6,21 @@ export class Score extends React.Component {
         super(props);
 
         this.state = {
-        players: []
+            players: []
         };
     }
 
-    componentWillMount = () =>{
+    componentWillMount = () => {
         alert("componentWillMount");
-    this.setState({
-        players: this.props.players
-})
-}
+        this.setState({
+            players: this.props.players
+        })
+    }
 
-    nextRound(){
+    nextRound() {
         alert("sendQuestion");
         this.props.hubConnection.invoke('sendQuestion');
-}
-    
+    }
 
     render() {
         return (
@@ -34,13 +33,13 @@ export class Score extends React.Component {
                             <th>Score</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="niceShuffle">
                         {
                             this.state.players.map(function (player, index) {
                                 console.log(player);
                                 return (
                                     <tr>
-                                        <th scope="row">{index+1 }</th>
+                                        <th scope="row">{index + 1}</th>
                                         <td>{player.name}</td>
                                         <td>{player.points}</td>
                                     </tr>
