@@ -1,11 +1,15 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-import { HubConnection } from '@aspnet/signalr-client';
+//import { HubConnection } from '@aspnet/signalr-client';
+import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js'
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
 import { StartScreen } from './Start/StartScreen';
 import { Score } from './Quiz/score';
 //import 'bootstrap/dist/css/bootstrap.css';
+
+//This is for setting.json
+//"homepage": "http://lowwick-001-site1.itempurl.com/",
 import '../node_modules/reactstrap/dist/reactstrap.cjs'
 
 class Game extends React.Component {
@@ -40,8 +44,6 @@ class Game extends React.Component {
             });
         });
     }
-
-   
 
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.nick);
