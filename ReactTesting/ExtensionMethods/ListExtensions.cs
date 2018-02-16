@@ -48,12 +48,15 @@ namespace ReactTesting.ExtensionMethods
                     else if (prop.PropertyType == typeof(List<string>))
                     {
                         var propertyList = (List<string>)prop.GetValue(item);
-                        for (int i = 0; i < propertyList.Count; i++)
+                        if (propertyList != null)
                         {
-                            propertyList[i] = WebUtility.HtmlDecode(propertyList[i]);
-                            propertyList[i] = WebUtility.UrlDecode(propertyList[i]);
+                            for (int i = 0; i < propertyList.Count; i++)
+                            {
+                                propertyList[i] = WebUtility.HtmlDecode(propertyList[i]);
+                                propertyList[i] = WebUtility.UrlDecode(propertyList[i]);
+                            }
+                            prop.SetValue(item, propertyList);
                         }
-                        prop.SetValue(item, propertyList);
                     }
                 }
             }

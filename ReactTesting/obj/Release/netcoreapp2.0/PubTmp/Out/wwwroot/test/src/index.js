@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-import { HubConnection } from '@aspnet/signalr-client';
+//import { HubConnection } from '@aspnet/signalr-client';
+import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js'
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
 import { StartScreen } from './Start/StartScreen';
@@ -17,7 +18,6 @@ class Game extends React.Component {
             nick: '',
             hubConnection: null,
             players: [],
-            testname: "hej"
         };
     }
 
@@ -42,8 +42,6 @@ class Game extends React.Component {
         });
     }
 
-   
-
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.nick);
         alert("added player");
@@ -60,7 +58,6 @@ class Game extends React.Component {
     }
 
     renderScoreBoard(players) {
-                //<Score players={this.state.players} />
         ReactDOM.hydrate(
             <div>
                 <Score players={players} hubConnection={this.state.hubConnection} />
