@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using ReactTesting.Data;
+using ReactTesting.Data.Models;
 using ReactTesting.ExtensionMethods;
 using System;
 using System.Collections.Generic;
@@ -17,12 +18,28 @@ namespace ReactTesting.Hubs
             this.dataManager = dataManager;
         }
 
-        public static List<Result> questions = new List<Result>();
+        public static List<Quiz> questions = new List<Quiz>();
         static List<Player> players = new List<Player>();
-        static Result currentQuestion = new Result();
+        static Quiz currentQuestion = new Quiz();
+        static List<GameRoom> gameRooms = new List<GameRoom>();
         static int RoundCount = 0;
 
-        public void AddPlayer(string name)
+
+        public void CreateRoom(string name)
+        {
+            string connId = Context.ConnectionId;
+            string roomCode = dataManager
+                .GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4);
+            Groups.AddAsync(connId, roomCode);
+            GameRoom newRoom = new GameRoom
+            {
+                GroupName = roomCode,
+            };
+            newRoom.Players.Add(new Player { Name = name, ConnectionId = connId });
+            gameRooms.Add(newRoom);
+        }
+
+        public void AddPlayer(string name, string roomCode)
         {
             string connId = Context.ConnectionId;
             Player newPlayer = new Player
@@ -30,6 +47,9 @@ namespace ReactTesting.Hubs
                 Name = name,
                 ConnectionId = connId
             };
+            Groups.AddAsync(connId, roomCode);
+            var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
+            gameRoom.Players.Add(newPlayer);
             players.Add(newPlayer);
             //Clients.All.InvokeAsync("addNewPlayerToList", newPlayer);
         }
@@ -170,7 +190,7 @@ namespace ReactTesting.Hubs
                 .Append(questions[index].Correct_answer).ToList();
             alternatives.Shuffle();
 
-            Result question = new Result
+            Quiz question = new Quiz
             {
                 Category = questions[index].Category,
                 Correct_answer = questions[index].Correct_answer,

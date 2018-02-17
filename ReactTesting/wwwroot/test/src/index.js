@@ -4,7 +4,8 @@ import ReactDOM from 'react-dom';
 import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js';
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
-import { StartScreen } from './Start/StartScreen';
+import { StartScreen } from './Start/startScreen';
+import { JoinScreen } from './Start/joinScreen';
 import { Score } from './Quiz/score';
 import { GameEnd } from './Quiz/gameEnd';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -21,7 +22,8 @@ class Game extends React.Component {
         this.state = {
             nick: '',
             hubConnection: null,
-            players: []
+            players: [],
+            roomCode: ''
         };
     }
 
@@ -112,14 +114,19 @@ class Game extends React.Component {
             , document.getElementById('root'));
     }
 
+    testsendprop() {
+        alert("testsendprop");
+    }
+
     render() {
+        //<button onClick={() => this.addPlayer()} >Connect</button>
+        //<button onClick={() => this.resetAll()} >Reset all</button>
+        //< StartScreen hubConnection={this.state.hubConnection} />
         return (
             <Container>
                 <Row>
                     <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <button onClick={() => this.addPlayer()} >Connect</button>
-                        <button onClick={() => this.resetAll()} >Reset all</button>
-                        < StartScreen hubConnection={this.state.hubConnection} />
+                        <JoinScreen testsendprop={this.testsendprop()}/>
                     </Col>
                 </Row>
             </Container>

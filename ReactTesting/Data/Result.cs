@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ReactTesting.Data
 {
-    public class Result
+    public class Quiz
     {
         public string Category { get; set; }
         public string Type { get; set; }
@@ -16,9 +16,9 @@ namespace ReactTesting.Data
         public List<string> Alternatives { get; set; }
     }
 
-    public class Quiz
+    public class Result
     {
         public int Response_code { get; set; }
-        public List<Result> Results { get; set; }
+        public List<Quiz> Results { get; set; }
     }
 }
