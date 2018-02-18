@@ -30,16 +30,32 @@ namespace ReactTesting.Hubs
             string connId = Context.ConnectionId;
             string roomCode = dataManager
                 .GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 4);
-            Groups.AddAsync(connId, roomCode);
             GameRoom newRoom = new GameRoom
             {
                 GroupName = roomCode,
+                Players = new List<Player>()
             };
-            newRoom.Players.Add(new Player { Name = name, ConnectionId = connId });
             gameRooms.Add(newRoom);
+            AddPlayer(name, roomCode);
+            Clients.Client(connId).InvokeAsync("showStartScreen", true, roomCode);
         }
 
-        public void AddPlayer(string name, string roomCode)
+        async public Task JoinRoom(string name, string roomCode)
+        {
+            string connId = Context.ConnectionId;
+            var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
+            if (gameRoom == null)
+            {
+                await Clients.Client(connId).InvokeAsync("connectionFail");
+            }
+            else
+            {
+                AddPlayer(name, roomCode);
+                await Clients.Client(connId).InvokeAsync("showStartScreen", false, roomCode);
+            }
+        }
+
+        void AddPlayer(string name, string roomCode)
         {
             string connId = Context.ConnectionId;
             Player newPlayer = new Player
@@ -50,8 +66,6 @@ namespace ReactTesting.Hubs
             Groups.AddAsync(connId, roomCode);
             var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
             gameRoom.Players.Add(newPlayer);
-            players.Add(newPlayer);
-            //Clients.All.InvokeAsync("addNewPlayerToList", newPlayer);
         }
 
         async public Task StartGame(int numberOfQuestions)
@@ -142,7 +156,9 @@ namespace ReactTesting.Hubs
 
         public void ResetGame()
         {
-            players.Clear();
+            //players.Clear();
+            gameRooms.Clear();
+            gameRooms = new List<GameRoom>();
             RoundCount = 0;
         }
 

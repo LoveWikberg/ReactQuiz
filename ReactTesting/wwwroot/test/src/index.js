@@ -20,28 +20,36 @@ class Game extends React.Component {
         super(props);
 
         this.state = {
-            nick: '',
+            name: '',
             hubConnection: null,
             players: [],
             roomCode: ''
         };
     }
 
-    componentDidMount = () => {
-        const nick = window.prompt('Your name:', 'John');
+    componentWillMount = () => {
         const hubConnection = new HubConnection('http://localhost:50083/quiz');
 
-        this.setState({ hubConnection, nick }, () => {
+        this.setState({ hubConnection }, () => {
             this.state.hubConnection
                 .start()
                 .then(() => console.log("connected"))
-                .catch(err => console.log('Error while establishing connection :('));
+                .catch(err => console.log('Error while establishing connection :(', err));
 
             this.state.hubConnection.on('sendQuestion', (question) => {
                 console.log(question);
                 this.renderQuestion(question);
             });
-
+            this.state.hubConnection.on('showStartScreen', (isCreator, roomCode) => {
+                alert("showStartScreen");
+                this.setState({
+                    roomCode: roomCode
+                });
+                this.renderStartScreen(isCreator);
+            });
+            this.state.hubConnection.on("connectionFail", () => {
+                alert("connedction failed");
+            })
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderScoreBoard(players);
             });
@@ -64,13 +72,14 @@ class Game extends React.Component {
     }
 
     addPlayer() {
-        this.state.hubConnection.invoke('addPlayer', this.state.nick);
+        this.state.hubConnection.invoke('addPlayer', this.state.name);
         alert("added player");
     }
 
     resetAll() {
-        this.state.hubConnection.invoke('resetGame');
-        alert("Reseted");
+        this.state.hubConnection.invoke('resetGame')
+            .then(() => alert("reseted"))
+            .catch(() => alert("reset failed"));
     }
 
     renderGameEnd(players, endMessage) {
@@ -85,9 +94,19 @@ class Game extends React.Component {
             , document.getElementById('root'));
     }
 
-    renderStartScreen() {
-        // Use this instead of reactDOm.render()
-        //ReactDOM.hydrate(element, container[, callback])
+    renderStartScreen(isCreator) {
+        ReactDOM.hydrate(
+            <Container>
+                <Row>
+                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
+                        <StartScreen
+                            isCreator={isCreator}
+                            roomCode={this.state.roomCode}
+                        />
+                    </Col>
+                </Row>
+            </Container>
+            , document.getElementById('root'));
     }
 
     renderScoreBoard(players) {
@@ -114,19 +133,30 @@ class Game extends React.Component {
             , document.getElementById('root'));
     }
 
-    testsendprop() {
-        alert("testsendprop");
+    changeName = (name) => {
+        this.setState({
+            name: name
+        });
+    }
+
+    changeRoomCode = (code) => {
+        this.setState({
+            roomCode: code
+        });
     }
 
     render() {
-        //<button onClick={() => this.addPlayer()} >Connect</button>
-        //<button onClick={() => this.resetAll()} >Reset all</button>
-        //< StartScreen hubConnection={this.state.hubConnection} />
         return (
             <Container>
+                <input type="button" value="reset" onClick={() => this.resetAll()} />
                 <Row>
                     <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <JoinScreen testsendprop={this.testsendprop()}/>
+                        <JoinScreen
+                            changeName={this.changeName}
+                            changeRoomCode={this.changeRoomCode}
+                            hubConnection={this.state.hubConnection}
+                            name={this.state.name}
+                            roomCode={this.state.roomCode} />
                     </Col>
                 </Row>
             </Container>
