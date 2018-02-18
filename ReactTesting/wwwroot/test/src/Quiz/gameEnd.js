@@ -1,36 +1,18 @@
 ﻿import React from 'react';
 import { Button, Table } from 'reactstrap';
 
-export class Score extends React.Component {
-    constructor(props) {
-        super(props);
+export class GameEnd extends React.Component {
 
-        this.state = {
-            players: []
-        };
-    }
+    componentDidMount() {
 
-
-    componentWillMount = () => {
-        alert("componentWillMount");
-        this.setState({
-            players: this.props.players
-        });
-    }
-
-    //Use this later for score animation
-    componentDidUpdate = (prevProps, prevState) => {
-
-    }
-
-    nextRound() {
-        alert("sendQuestion");
-        this.props.hubConnection.invoke('sendQuestion');
     }
 
     render() {
         return (
             <div>
+                <h2>
+                    {this.props.endMessage}
+                </h2>
                 <Table>
                     <thead>
                         <tr>
@@ -39,9 +21,9 @@ export class Score extends React.Component {
                             <th>Score</th>
                         </tr>
                     </thead>
-                    <tbody className="niceShuffle">
+                    <tbody>
                         {
-                            this.state.players.map(function (player, index) {
+                            this.props.players.map(function (player, index) {
                                 console.log(player);
                                 return (
                                     <tr>
@@ -54,8 +36,8 @@ export class Score extends React.Component {
                         }
                     </tbody>
                 </Table>
-                <Button onClick={() => this.nextRound()}>Next Round</Button>
             </div>
         );
     }
+
 }
