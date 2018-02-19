@@ -10,5 +10,7 @@ namespace ReactTesting.Data.Models
         public string GroupName { get; set; }
         public List<Quiz> Questions { get; set; }
         public List<Player> Players { get; set; }
+        public Quiz CurrentQuestion { get; set; }
+        public int RoundCount { get; set; }
     }
 }

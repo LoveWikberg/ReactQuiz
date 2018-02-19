@@ -26,7 +26,7 @@ namespace ReactTesting.ExtensionMethods
         }
 
         /// <summary>
-        /// Decode all occurrences of strings
+        /// Find all string elements and decode all occurrences of UTF8 content
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>

@@ -49,7 +49,10 @@ class Game extends React.Component {
             });
             this.state.hubConnection.on("connectionFail", () => {
                 alert("connedction failed");
-            })
+            });
+            this.state.hubConnection.on("testquestions", (questions) => {
+                console.log(questions);
+            });
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderScoreBoard(players);
             });
@@ -102,6 +105,7 @@ class Game extends React.Component {
                         <StartScreen
                             isCreator={isCreator}
                             roomCode={this.state.roomCode}
+                            hubConnection={this.state.hubConnection}
                         />
                     </Col>
                 </Row>
