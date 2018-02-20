@@ -11,8 +11,6 @@ import { GameEnd } from './Quiz/gameEnd';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container, Row, Col } from 'reactstrap';
 
-//This is for setting.json
-//"homepage": "http://lowwick-001-site1.itempurl.com/",
 
 class Game extends React.Component {
 
@@ -27,7 +25,15 @@ class Game extends React.Component {
         };
     }
 
-    componentWillMount = () => {
+    componentDidMount = () => {
+        //this.setState({
+        //    hubConnection: new HubConnection('http://localhost:50083/quiz')
+        //}, () => {
+        //    this.state.hubConnection
+        //        .start()
+        //        .then(() => console.log("connected"))
+        //        .catch(err => console.log('Error while establishing connection :(', err));
+        //});
         const hubConnection = new HubConnection('http://localhost:50083/quiz');
 
         this.setState({ hubConnection }, () => {
@@ -40,16 +46,22 @@ class Game extends React.Component {
                 console.log(question);
                 this.renderQuestion(question);
             });
-            this.state.hubConnection.on('showStartScreen', (isCreator, roomCode) => {
-                alert("showStartScreen");
+            this.state.hubConnection.on('showStartScreen', (isCreator, roomCode, players) => {
                 this.setState({
-                    roomCode: roomCode
+                    roomCode: roomCode,
+                    players: players
                 });
                 this.renderStartScreen(isCreator);
             });
+            //this.state.hubConnection.on('updatePlayerList', (players) => {
+            //    console.log(players);
+            //    this.setState({
+            //        name: "basse"
+            //    })
+            //});
             this.state.hubConnection.on("connectionFail", () => {
                 alert("connedction failed");
-            })
+            });
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderScoreBoard(players);
             });
@@ -102,6 +114,8 @@ class Game extends React.Component {
                         <StartScreen
                             isCreator={isCreator}
                             roomCode={this.state.roomCode}
+                            hubConnection={this.state.hubConnection}
+                            players={this.state.players}
                         />
                     </Col>
                 </Row>
@@ -147,19 +161,16 @@ class Game extends React.Component {
 
     render() {
         return (
-            <Container>
-                <input type="button" value="reset" onClick={() => this.resetAll()} />
-                <Row>
-                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
+                //<input type="button" value="reset" onClick={() => this.resetAll()} />
+            <div className="tealGameContainer">
+
                         <JoinScreen
                             changeName={this.changeName}
                             changeRoomCode={this.changeRoomCode}
                             hubConnection={this.state.hubConnection}
                             name={this.state.name}
                             roomCode={this.state.roomCode} />
-                    </Col>
-                </Row>
-            </Container>
+            </div>
         );
     }
 }

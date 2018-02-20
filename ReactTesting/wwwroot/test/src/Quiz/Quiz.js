@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Button } from 'reactstrap';
-import {Alternative} from './alternative';
+import { Alternative } from './alternative';
 
 export class Quiz extends React.Component {
     constructor(props) {
@@ -14,10 +14,15 @@ export class Quiz extends React.Component {
                 <h1>{this.props.question.question}</h1>
 
                 {
-                    this.props.question.alternatives.map( (alt, index) => {
+                    this.props.question.alternatives.map((alt, index) => {
                         const color = (index % 2 === 0) ? "primary" : "secondary";
                         return (
-                            <Alternative color={color} alt={alt} hubConnection={this.props.hubConnection}></Alternative>
+                            <Alternative
+                                color={color}
+                                alt={alt}
+                                hubConnection={this.props.hubConnection}
+                                roomCode={this.props.roomCode}
+                            />
                         );
                     })
                 }

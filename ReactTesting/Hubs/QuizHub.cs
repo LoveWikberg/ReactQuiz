@@ -18,12 +18,23 @@ namespace ReactTesting.Hubs
             this.dataManager = dataManager;
         }
 
-        public static List<Quiz> questions = new List<Quiz>();
-        static List<Player> players = new List<Player>();
-        static Quiz currentQuestion = new Quiz();
+        //public static List<Quiz> questions = new List<Quiz>();
+        //static List<Player> players = new List<Player>();
+        //static Quiz currentQuestion = new Quiz();
         static List<GameRoom> gameRooms = new List<GameRoom>();
-        static int RoundCount = 0;
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            string connId = Context.ConnectionId;
+            var gameRoom = gameRooms.FindRoomWithSpecificPlayer(connId, out Player player);
+            if (gameRoom != null)
+            {
+                gameRoom.Players.Remove(player);
+                Clients.AllExcept(ExcludedIds(gameRoom.GroupName))
+                    .InvokeAsync("updatePlayerList", gameRoom.Players);
+            }
+            return base.OnDisconnectedAsync(exception);
+        }
 
         public void CreateRoom(string name)
         {
@@ -33,11 +44,13 @@ namespace ReactTesting.Hubs
             GameRoom newRoom = new GameRoom
             {
                 GroupName = roomCode,
-                Players = new List<Player>()
+                Players = new List<Player>(),
+                RoundCount = 0
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
-            Clients.Client(connId).InvokeAsync("showStartScreen", true, roomCode);
+            Clients.Client(connId).InvokeAsync("showStartScreen", true, roomCode
+                , gameRooms.SingleOrDefault(r => r.GroupName == roomCode).Players);
         }
 
         async public Task JoinRoom(string name, string roomCode)
@@ -51,8 +64,26 @@ namespace ReactTesting.Hubs
             else
             {
                 AddPlayer(name, roomCode);
-                await Clients.Client(connId).InvokeAsync("showStartScreen", false, roomCode);
+                await Clients.Client(connId).InvokeAsync("showStartScreen", false, roomCode, gameRoom.Players);
+                await Clients.AllExcept(ExcludedIds(gameRoom.GroupName, connId))
+                    .InvokeAsync("updatePlayerList", gameRoom.Players);
             }
+        }
+
+        List<string> ExcludedIds(string groupName, params string[] excludedIds)
+        {
+            List<string> excludedClients = new List<string>();
+            var rooms = gameRooms.Where(r => r.GroupName != groupName);
+            foreach (var room in rooms)
+            {
+                foreach (var player in room.Players)
+                {
+                    excludedClients.Add(player.ConnectionId);
+                }
+            }
+            if (excludedIds.Length != 0)
+                excludedClients.AddRange(excludedIds);
+            return excludedClients;
         }
 
         void AddPlayer(string name, string roomCode)
@@ -68,68 +99,74 @@ namespace ReactTesting.Hubs
             gameRoom.Players.Add(newPlayer);
         }
 
-        async public Task StartGame(int numberOfQuestions)
+        async public Task StartGame(int numberOfQuestions, string roomCode)
         {
-            questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
-            await SendQuestion();
+            var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
+            room.Questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
+            //questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
+            await SendQuestion(roomCode);
         }
 
-        async public void CheckIfAllPlayersHaveAnswered(string answer)
+        async public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
         {
             string connId = Context.ConnectionId;
-            players.SingleOrDefault(p => p.ConnectionId == connId).HasAnswered = true;
-            players.SingleOrDefault(p => p.ConnectionId == connId).Answer = answer;
+            var gameRoom = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
+            var player = gameRoom.Players.SingleOrDefault(p => p.ConnectionId == connId);
+            player.HasAnswered = true;
+            player.Answer = answer;
+            //players.SingleOrDefault(p => p.ConnectionId == connId).HasAnswered = true;
+            //players.SingleOrDefault(p => p.ConnectionId == connId).Answer = answer;
 
-            if (players.All(p => p.HasAnswered))
+            if (gameRoom.Players.All(p => p.HasAnswered))
             {
-                RoundCount += 1;
-                SetPoints();
-                if (RoundCount >= 3)
+                gameRoom.RoundCount += 1;
+                SetPoints(gameRoom);
+                if (gameRoom.RoundCount >= 3)
                 {
-                    if (questions.Count != 0)
+                    if (gameRoom.Questions.Count != 0)
                     {
-                        await ShowAnswers();
-                        RoundCount = 0;
+                        await ShowAnswers(gameRoom);
+                        gameRoom.RoundCount = 0;
                     }
                     else
                     {
-                        await GameEnded();
+                        await GameEnded(gameRoom);
                     }
                 }
                 else
                 {
-                    if (questions.Count != 0)
+                    if (gameRoom.Questions.Count != 0)
                     {
-                        await SendQuestion();
+                        await SendQuestion(gameRoom.GroupName);
                     }
                     else
                     {
-                        await GameEnded();
+                        await GameEnded(gameRoom);
                     }
                 }
-                ResetPlayerAnswers();
+                ResetPlayerAnswers(gameRoom.Players);
             }
         }
 
-        async Task GameEnded()
+        async Task GameEnded(GameRoom gameRoom)
         {
-            int highestScore = players.Max(p => p.Points);
-            if (IsDraw(highestScore))
+            int highestScore = gameRoom.Players.Max(p => p.Points);
+            if (IsDraw(highestScore, gameRoom.Players))
             {
-                string[] drawers = players.Where(p => p.Points == highestScore)
+                string[] drawers = gameRoom.Players.Where(p => p.Points == highestScore)
                     .Select(p => p.Name).ToArray();
-                await Clients.All.InvokeAsync("gameDraw", players
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("gameDraw", gameRoom.Players
                     .OrderByDescending(p => p.Points), drawers);
             }
             else
             {
-                string winner = players.SingleOrDefault(p => p.Points == highestScore).Name;
-                await Clients.All.InvokeAsync("gameWon", players
+                string winner = gameRoom.Players.SingleOrDefault(p => p.Points == highestScore).Name;
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("gameWon", gameRoom.Players
                     .OrderByDescending(p => p.Points), winner);
             }
         }
 
-        bool IsDraw(int score)
+        bool IsDraw(int score, List<Player> players)
         {
             var playersWithHighestScore = players
               .Where(p => p.Points == score);
@@ -139,41 +176,30 @@ namespace ReactTesting.Hubs
                 return false;
         }
 
-        T GetWinnerOrDraw<T>(int highestScore)
+        async public Task ShowAnswers(GameRoom gameRoom)
         {
-            var playersWithHighestScore = players
-                .Where(p => p.Points == highestScore).ToArray();
-            if (playersWithHighestScore.Length > 1)
-                return (T)(object)playersWithHighestScore[0];
-            else
-                return (T)(object)playersWithHighestScore;
-        }
-
-        async public Task ShowAnswers()
-        {
-            await Clients.All.InvokeAsync("showAnswers", players.OrderByDescending(p => p.Points));
+            await Clients.Group(gameRoom.GroupName)
+                .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
         }
 
         public void ResetGame()
         {
-            //players.Clear();
             gameRooms.Clear();
             gameRooms = new List<GameRoom>();
-            RoundCount = 0;
         }
 
-        void SetPoints()
+        void SetPoints(GameRoom gameRoom)
         {
-            foreach (var player in players)
+            foreach (var player in gameRoom.Players)
             {
-                if (player.Answer == currentQuestion.Correct_answer)
+                if (player.Answer == gameRoom.CurrentQuestion.Correct_answer)
                 {
                     player.Points += 1;
                 }
             }
         }
 
-        void ResetPlayerAnswers()
+        void ResetPlayerAnswers(List<Player> players)
         {
             foreach (var player in players)
             {
@@ -182,22 +208,24 @@ namespace ReactTesting.Hubs
             }
         }
 
-        public async Task SendQuestion()
+        public async Task SendQuestion(string roomCode)
         {
+            var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
             //var question = GetRandomQuestion();
             //await Clients.All.InvokeAsync("sendQuestion", question);
-            if (questions.Count == 0)
+            if (room.Questions.Count == 0)
             {
-                await ShowAnswers();
+                await ShowAnswers(room);
             }
             else
             {
-                GetRandomQuestion();
-                await Clients.All.InvokeAsync("sendQuestion", currentQuestion);
+                room.CurrentQuestion = GetRandomQuestion(room.Questions);
+                await Clients.Group(room.GroupName).InvokeAsync("sendQuestion", room.CurrentQuestion);
+                //await Clients.All.InvokeAsync("sendQuestion", room.CurrentQuestion);
             }
         }
 
-        void GetRandomQuestion()
+        Quiz GetRandomQuestion(List<Quiz> questions)
         {
             Random random = new Random();
             int index = random.Next(0, questions.Count - 1);
@@ -215,8 +243,8 @@ namespace ReactTesting.Hubs
                 Type = questions[index].Type,
                 Alternatives = alternatives
             };
-            currentQuestion = question;
             questions.RemoveAt(index);
+            return question;
             //return question;
         }
     }

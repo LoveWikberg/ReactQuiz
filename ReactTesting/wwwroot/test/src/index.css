@@ -1,4 +1,36 @@
 ﻿body, html {
-   margin-top:5%;
+    background-color: #CCDFCB;
+    /*margin-top: 5%;*/
 }
 
+#root {
+    background-color: #CCDFCB;
+}
+
+h1, h2, h3, h4, p {
+    font-family: Calibri, sans-serif !important;
+    color:white !important;
+}
+
+.test {
+    color: green;
+}
+
+.tealGameContainer {
+    border-radius: 10px;
+    text-align: center;
+    background-color: #056571;
+    margin: 8%;
+    height: 90vh;
+    padding: 5%;
+}
+
+.watermelonBtn {
+    background-color: #FF6A5C !important;
+    color: white !important;
+}
+
+.matteBtn {
+    background-color: #414141 !important;
+    color: white !important;
+}

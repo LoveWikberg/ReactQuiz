@@ -12,7 +12,6 @@ export class Score extends React.Component {
 
 
     componentWillMount = () => {
-        alert("componentWillMount");
         this.setState({
             players: this.props.players
         });
@@ -20,12 +19,13 @@ export class Score extends React.Component {
 
     //Use this later for score animation
     componentDidUpdate = (prevProps, prevState) => {
-
+        alert("componentDidUpdate");
+        console.log("previoues: ", prevState);
+        console.log("current: ", this.state.players);
     }
 
     nextRound() {
-        alert("sendQuestion");
-        this.props.hubConnection.invoke('sendQuestion');
+        this.props.hubConnection.invoke('sendQuestion', this.props.roomCode);
     }
 
     render() {
@@ -42,7 +42,6 @@ export class Score extends React.Component {
                     <tbody className="niceShuffle">
                         {
                             this.state.players.map(function (player, index) {
-                                console.log(player);
                                 return (
                                     <tr>
                                         <th scope="row">{index + 1}</th>

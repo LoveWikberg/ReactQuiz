@@ -12,12 +12,13 @@ export class Host extends React.Component {
     }
 
     setNumberOfQuestions(e) {
-        // TODO
-        // Compare previous value to current value
-        // This might not be needed
         this.setState({
             numberOfQuestions: e
         });
+    }
+
+    startGame() {
+        this.props.hubConnection.invoke('startGame', this.state.numberOfQuestions, this.props.roomCode);
     }
 
     render() {

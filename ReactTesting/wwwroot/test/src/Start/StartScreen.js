@@ -1,33 +1,47 @@
 ﻿import React from 'react';
 import { NotHost } from './notHost';
 import { Host } from './host';
+import { Table } from 'reactstrap';
 
 
 export class StartScreen extends React.Component {
+
     constructor(props) {
         super(props);
 
         this.state = {
-            numberOfQuestions: 10
+            players: []
         };
     }
 
-    setNumberOfQuestions(value) {
+    componentWillMount = () => {
         this.setState({
-            numberOfQuestions: value
+            players: this.props.players
+        });
+    }
+
+    componentDidMount = () => {
+        alert("componentDidMount");
+        this.props.hubConnection.on("updatePlayerList", (players) => {
+            alert("updatePlayerList");
+            this.setState({
+                players: players
+            });
         });
     }
 
     startGame() {
-        this.props.hubConnection.invoke('startGame', this.state.numberOfQuestions);
-        alert(this.state.numberOfQuestions);
+        this.props.hubConnection.invoke('startGame', this.props.roomCode);
     }
 
     checkIfCreator = () => {
         if (this.props.isCreator) {
             return (
                 <div>
-                    <Host />
+                    <Host
+                        hubConnection={this.props.hubConnection}
+                        roomCode={this.props.roomCode}
+                    />
                 </div>
             );
         }
@@ -40,14 +54,28 @@ export class StartScreen extends React.Component {
         }
     }
     render() {
-        //<h1>Hur många frågor?</h1>
-        //<input type="number" min="3" max="25" value={this.state.numberOfQuestions}
-        //    onChange={e => this.setNumberOfQuestions(e.target.value)} ></input>
-        //<input type="button" value="Start" onClick={() => this.startGame()} ></input>
         return (
             <div>
                 <h3>Room Code: {this.props.roomCode}</h3>
                 {this.checkIfCreator()}
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.players.map((player) => {
+                                return (
+                                    <tr>
+                                        <td>{player.name}</td>
+                                    </tr>
+                                );
+                            })
+                        }
+                    </tbody>
+                </Table>
             </div>
         );
     }
