@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReactTesting.Data;
+using ReactTesting.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -60,6 +62,23 @@ namespace ReactTesting.ExtensionMethods
                     }
                 }
             }
+        }
+
+        public static GameRoom FindRoomWithSpecificPlayer(this List<GameRoom> gameRooms, string connId, out Player specPlayer)
+        {
+            foreach (var room in gameRooms)
+            {
+                foreach (var player in room.Players)
+                {
+                    if (player.ConnectionId == connId)
+                    {
+                        specPlayer = player;
+                        return room;
+                    }
+                }
+            }
+            specPlayer = null;
+            return null;
         }
     }
 }

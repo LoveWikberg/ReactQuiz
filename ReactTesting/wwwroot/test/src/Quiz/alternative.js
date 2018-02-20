@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 export class Alternative extends React.Component {
 
     sendAnswer(e) {
-        this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", this.props.alt);
+        this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", this.props.alt, this.props.roomCode);
         alert("sending answer: " + this.props.alt);
     }
 

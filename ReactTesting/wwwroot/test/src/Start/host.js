@@ -19,7 +19,6 @@ export class Host extends React.Component {
 
     startGame() {
         this.props.hubConnection.invoke('startGame', this.state.numberOfQuestions, this.props.roomCode);
-        //alert(this.state.numberOfQuestions);
     }
 
     render() {

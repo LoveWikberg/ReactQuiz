@@ -23,6 +23,18 @@ namespace ReactTesting.Hubs
         //static Quiz currentQuestion = new Quiz();
         static List<GameRoom> gameRooms = new List<GameRoom>();
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            string connId = Context.ConnectionId;
+            var gameRoom = gameRooms.FindRoomWithSpecificPlayer(connId, out Player player);
+            if (gameRoom != null)
+            {
+                gameRoom.Players.Remove(player);
+                Clients.AllExcept(ExcludedIds(gameRoom.GroupName))
+                    .InvokeAsync("updatePlayerList", gameRoom.Players);
+            }
+            return base.OnDisconnectedAsync(exception);
+        }
 
         public void CreateRoom(string name)
         {
@@ -37,7 +49,8 @@ namespace ReactTesting.Hubs
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
-            Clients.Client(connId).InvokeAsync("showStartScreen", true, roomCode);
+            Clients.Client(connId).InvokeAsync("showStartScreen", true, roomCode
+                , gameRooms.SingleOrDefault(r => r.GroupName == roomCode).Players);
         }
 
         async public Task JoinRoom(string name, string roomCode)
@@ -51,8 +64,26 @@ namespace ReactTesting.Hubs
             else
             {
                 AddPlayer(name, roomCode);
-                await Clients.Client(connId).InvokeAsync("showStartScreen", false, roomCode);
+                await Clients.Client(connId).InvokeAsync("showStartScreen", false, roomCode, gameRoom.Players);
+                await Clients.AllExcept(ExcludedIds(gameRoom.GroupName, connId))
+                    .InvokeAsync("updatePlayerList", gameRoom.Players);
             }
+        }
+
+        List<string> ExcludedIds(string groupName, params string[] excludedIds)
+        {
+            List<string> excludedClients = new List<string>();
+            var rooms = gameRooms.Where(r => r.GroupName != groupName);
+            foreach (var room in rooms)
+            {
+                foreach (var player in room.Players)
+                {
+                    excludedClients.Add(player.ConnectionId);
+                }
+            }
+            if (excludedIds.Length != 0)
+                excludedClients.AddRange(excludedIds);
+            return excludedClients;
         }
 
         void AddPlayer(string name, string roomCode)
@@ -189,7 +220,7 @@ namespace ReactTesting.Hubs
             else
             {
                 room.CurrentQuestion = GetRandomQuestion(room.Questions);
-                await Clients.Group(room.GroupName).InvokeAsync("testquestions", room);
+                await Clients.Group(room.GroupName).InvokeAsync("sendQuestion", room.CurrentQuestion);
                 //await Clients.All.InvokeAsync("sendQuestion", room.CurrentQuestion);
             }
         }

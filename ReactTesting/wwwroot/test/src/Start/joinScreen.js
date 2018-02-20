@@ -1,15 +1,15 @@
 ﻿import React from 'react';
 import { Button, Input } from 'reactstrap';
+import '../index.css';
+import './joinScreen.css';
 
 export class JoinScreen extends React.Component {
 
     joinRoom() {
-        alert("join " + this.props.name);
         this.props.hubConnection.invoke("joinRoom", this.props.name, this.props.roomCode);
     }
 
     createRoom() {
-        alert("create " + this.props.name);
         this.props.hubConnection.invoke("createRoom", this.props.name);
     }
 
@@ -24,10 +24,13 @@ export class JoinScreen extends React.Component {
     render() {
         return (
             <div>
-                <Input placeholder="User name" onChange={(e) => this.changeName(e)} />
-                <Input placeholder="Room code" onChange={(e) => this.changeRoomCode(e)} />
-                <Button color="primary" onClick={() => this.joinRoom()}>Join room</Button>
-                <Button color="success" onClick={() => this.createRoom()}>Create room</Button>
+                <h1 className="title" >Quiz of Love</h1>
+
+                <Input className="inputSpacing" placeholder="User name" onChange={(e) => this.changeName(e)} />
+                <Input className="inputSpacing " placeholder="Room code" onChange={(e) => this.changeRoomCode(e)} />
+                <Button className="watermelonBtn btnSpacing" onClick={() => this.joinRoom()} block>Join room</Button>
+                <h4>Or...</h4>
+                <Button className="matteBtn btnSpacing" onClick={() => this.createRoom()} block>Create room</Button>
             </div>
         );
     }
