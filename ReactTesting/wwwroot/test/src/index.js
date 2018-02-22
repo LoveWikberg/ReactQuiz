@@ -85,7 +85,6 @@ class Game extends React.Component {
 
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.name);
-        alert("added player");
     }
 
     resetAll() {
@@ -96,54 +95,38 @@ class Game extends React.Component {
 
     renderGameEnd(players, endMessage) {
         ReactDOM.hydrate(
-            <Container>
-                <Row>
-                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <GameEnd endMessage={endMessage} players={players} />
-                    </Col>
-                </Row>
-            </Container>
+            <div className="tealGameContainer">
+                <GameEnd endMessage={endMessage} players={players} />
+            </div>
             , document.getElementById('root'));
     }
 
     renderStartScreen(isCreator) {
         ReactDOM.hydrate(
-            <Container>
-                <Row>
-                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <StartScreen
-                            isCreator={isCreator}
-                            roomCode={this.state.roomCode}
-                            hubConnection={this.state.hubConnection}
-                            players={this.state.players}
-                        />
-                    </Col>
-                </Row>
-            </Container>
+            <div className="tealGameContainer">
+                <StartScreen
+                    isCreator={isCreator}
+                    roomCode={this.state.roomCode}
+                    hubConnection={this.state.hubConnection}
+                    players={this.state.players}
+                />
+            </div>
             , document.getElementById('root'));
     }
 
     renderScoreBoard(players) {
         ReactDOM.hydrate(
-            <Container>
-                <Row>
-                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <Score players={players} hubConnection={this.state.hubConnection} />
-                    </Col>
-                </Row>
-            </Container>
+            <div className="tealGameContainer">
+                <Score players={players} hubConnection={this.state.hubConnection} />
+            </div>
             , document.getElementById('root'));
     }
 
     renderQuestion(question) {
         ReactDOM.hydrate(
-            <Container>
-                <Row>
-                    <Col sm={{ size: 8, order: 2, offset: 1 }}>
-                        <Quiz question={question} hubConnection={this.state.hubConnection} />
-                    </Col>
-                </Row>
-            </Container>
+            <div className="tealGameContainer">
+                <Quiz question={question} hubConnection={this.state.hubConnection} />
+            </div>
             , document.getElementById('root'));
     }
 
@@ -161,15 +144,15 @@ class Game extends React.Component {
 
     render() {
         return (
-                //<input type="button" value="reset" onClick={() => this.resetAll()} />
+            //<input type="button" value="reset" onClick={() => this.resetAll()} />
             <div className="tealGameContainer">
-
-                        <JoinScreen
-                            changeName={this.changeName}
-                            changeRoomCode={this.changeRoomCode}
-                            hubConnection={this.state.hubConnection}
-                            name={this.state.name}
-                            roomCode={this.state.roomCode} />
+                <JoinScreen
+                    changeName={this.changeName}
+                    changeRoomCode={this.changeRoomCode}
+                    hubConnection={this.state.hubConnection}
+                    name={this.state.name}
+                    roomCode={this.state.roomCode}
+                />
             </div>
         );
     }

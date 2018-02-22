@@ -1,5 +1,7 @@
 ﻿import React from 'react';
 import { Button } from 'reactstrap';
+import '../index.css';
+import './host.css';
 
 export class Host extends React.Component {
 
@@ -22,13 +24,14 @@ export class Host extends React.Component {
     }
 
     render() {
+        //<h1 className="title">Hur många frågor?{this.state.numberOfQuestions}</h1>
+        //<input type="number" min="9" max="36"
+        //    onChange={(e) => this.setNumberOfQuestions(e.target.value)}
+        //    step="3"></input>
         return (
             <div>
-                <h1>Hur många frågor?{this.state.numberOfQuestions}</h1>
-                <input type="number" min="9" max="36"
-                    onChange={(e) => this.setNumberOfQuestions(e.target.value)}
-                    step="3"></input>
-                <Button type="button" value="Start" onClick={() => this.startGame()} >Start</Button>
+                <input className="rangeInput" type="range" min="9" max="39" step="3"/>
+                <Button className="watermelonBtn" onClick={() => this.startGame()} block>Start</Button>
             </div>
         );
     }

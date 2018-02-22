@@ -2,6 +2,8 @@
 import { NotHost } from './notHost';
 import { Host } from './host';
 import { Table } from 'reactstrap';
+import '../index.css';
+import './startScreen.css';
 
 
 export class StartScreen extends React.Component {
@@ -56,26 +58,16 @@ export class StartScreen extends React.Component {
     render() {
         return (
             <div>
-                <h3>Room Code: {this.props.roomCode}</h3>
+                <h1 className="startTitle" >Room {this.props.roomCode}</h1>
                 {this.checkIfCreator()}
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            this.state.players.map((player) => {
-                                return (
-                                    <tr>
-                                        <td>{player.name}</td>
-                                    </tr>
-                                );
-                            })
-                        }
-                    </tbody>
-                </Table>
+                <h3 className="playersHeadline">Players</h3>
+                {
+                    this.state.players.map((player) => {
+                        return (
+                            <p>{player.name}</p>
+                        );
+                    })
+                }
             </div>
         );
     }
