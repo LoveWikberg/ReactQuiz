@@ -15,7 +15,7 @@ export class Quiz extends React.Component {
 
                 {
                     this.props.question.alternatives.map((alt, index) => {
-                        const color = (index % 2 === 0) ? "primary" : "secondary";
+                        const color = (index % 2 === 0) ? "watermelonBtn" : "matteBtn";
                         return (
                             <Alternative
                                 color={color}
