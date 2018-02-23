@@ -32,6 +32,8 @@ namespace ReactTesting.Hubs
                 gameRoom.Players.Remove(player);
                 Clients.AllExcept(ExcludedIds(gameRoom.GroupName))
                     .InvokeAsync("updatePlayerList", gameRoom.Players);
+                if (gameRoom.Players == null)
+                    gameRooms.Remove(gameRoom);
             }
             return base.OnDisconnectedAsync(exception);
         }
@@ -57,7 +59,7 @@ namespace ReactTesting.Hubs
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
-            if (gameRoom == null)
+            if (gameRoom == null || gameRoom.Players.Count >= 8)
             {
                 await Clients.Client(connId).InvokeAsync("connectionFail");
             }
@@ -114,11 +116,10 @@ namespace ReactTesting.Hubs
             var player = gameRoom.Players.SingleOrDefault(p => p.ConnectionId == connId);
             player.HasAnswered = true;
             player.Answer = answer;
-            //players.SingleOrDefault(p => p.ConnectionId == connId).HasAnswered = true;
-            //players.SingleOrDefault(p => p.ConnectionId == connId).Answer = answer;
 
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
+                System.Threading.Thread.Sleep(1000);
                 gameRoom.RoundCount += 1;
                 SetPoints(gameRoom);
                 if (gameRoom.RoundCount >= 3)
@@ -164,6 +165,7 @@ namespace ReactTesting.Hubs
                 await Clients.Group(gameRoom.GroupName).InvokeAsync("gameWon", gameRoom.Players
                     .OrderByDescending(p => p.Points), winner);
             }
+            gameRooms.Remove(gameRoom);
         }
 
         bool IsDraw(int score, List<Player> players)
@@ -211,8 +213,6 @@ namespace ReactTesting.Hubs
         public async Task SendQuestion(string roomCode)
         {
             var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
-            //var question = GetRandomQuestion();
-            //await Clients.All.InvokeAsync("sendQuestion", question);
             if (room.Questions.Count == 0)
             {
                 await ShowAnswers(room);
@@ -221,7 +221,6 @@ namespace ReactTesting.Hubs
             {
                 room.CurrentQuestion = GetRandomQuestion(room.Questions);
                 await Clients.Group(room.GroupName).InvokeAsync("sendQuestion", room.CurrentQuestion);
-                //await Clients.All.InvokeAsync("sendQuestion", room.CurrentQuestion);
             }
         }
 

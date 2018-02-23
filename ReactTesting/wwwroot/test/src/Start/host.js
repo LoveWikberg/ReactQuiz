@@ -9,7 +9,7 @@ export class Host extends React.Component {
         super(props);
 
         this.state = {
-            numberOfQuestions: 9
+            numberOfQuestions: 24
         };
     }
 
@@ -24,13 +24,13 @@ export class Host extends React.Component {
     }
 
     render() {
-        //<h1 className="title">Hur många frågor?{this.state.numberOfQuestions}</h1>
-        //<input type="number" min="9" max="36"
-        //    onChange={(e) => this.setNumberOfQuestions(e.target.value)}
-        //    step="3"></input>
         return (
             <div>
-                <input className="rangeInput" type="range" min="9" max="39" step="3"/>
+                <h3>Questions: {this.state.numberOfQuestions}</h3>
+                <input type="range" min="9" max="39" step="3"
+                    defaultValue="24"
+                    onChange={(e) => this.setNumberOfQuestions(e.target.value)}
+                />
                 <Button className="watermelonBtn" onClick={() => this.startGame()} block>Start</Button>
             </div>
         );
