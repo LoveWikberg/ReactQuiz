@@ -54,16 +54,15 @@ export class StartScreen extends React.Component {
         }
     }
     render() {
-                //<h3 className="playersHeadline">Players</h3>
         return (
             <div>
                 <h1 className="startTitle" >Room {this.props.roomCode}</h1>
                 {this.checkIfCreator()}
                 <div className="playerContainer">
                 {
-                    this.state.players.map((player) => {
-                        return (
-                            <h4>{player.name}</h4>
+                    this.state.players.map((player, key) => {
+                            return (
+                                <h5 key={key}>{player.name}</h5>
                         );
                     })
                 }

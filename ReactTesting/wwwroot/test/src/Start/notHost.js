@@ -6,7 +6,7 @@ export class NotHost extends React.Component {
     render() {
         return (
             <div>
-                <h3 className="information">Waiting for host to start game</h3>
+                <h3 className="information">Waiting for the host to start the game</h3>
             </div>
         );
     }

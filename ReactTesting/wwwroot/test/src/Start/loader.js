@@ -13,7 +13,7 @@ export class Loader extends React.Component {
                         size="5x"
                         spin
                     ></FontAwesome>
-                    <h2>Connecting to server</h2>
+                    <h2>{this.props.text}</h2>
                 </div>
             </div>
         );

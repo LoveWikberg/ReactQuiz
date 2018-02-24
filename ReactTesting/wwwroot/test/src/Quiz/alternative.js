@@ -7,28 +7,29 @@ export class Alternative extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
-            btnClass: "matteBtn",
+            btnClass: "matteBtn"
         };
     }
 
-    componentWillReceiveProps() {
-        this.setState({
-            btnClass:"matteBtn"
-});
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isDisabled === false) {
+            this.setState({
+                btnClass: "matteBtn"
+            });
+        }
     }
 
     sendAnswer(e) {
         if (this.props.alt === this.props.correctAnswer) {
             this.setState({
-                btnClass: "greenBtn",
-            })
+                btnClass: "greenBtn"
+            });
         }
         else {
             this.setState({
-                btnClass: "watermelonBtn",
-            })
+                btnClass: "watermelonBtn"
+            });
         }
         this.props.disablebuttons();
         this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", this.props.alt, this.props.roomCode);

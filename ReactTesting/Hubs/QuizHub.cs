@@ -119,7 +119,7 @@ namespace ReactTesting.Hubs
 
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
                 gameRoom.RoundCount += 1;
                 SetPoints(gameRoom);
                 if (gameRoom.RoundCount >= 3)
@@ -244,7 +244,6 @@ namespace ReactTesting.Hubs
             };
             questions.RemoveAt(index);
             return question;
-            //return question;
         }
     }
 }

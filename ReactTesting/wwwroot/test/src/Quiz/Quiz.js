@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Button } from 'reactstrap';
+import { Button, Progress } from 'reactstrap';
 import { Alternative } from './alternative';
 import './quiz.css';
 
@@ -9,38 +9,69 @@ export class Quiz extends React.Component {
 
         this.state = {
             isDisabled: null,
-            mainText: ""
+            mainText: "",
+            progress: 100,
+            interval: null,
+            progressColor: "info"
         };
     }
 
-    componentDidMount(){
+    componentWillMount() {
         this.setState({
             mainText: this.props.question.question,
             isDisabled: false
         });
-}
+        this.moveProgressBar();
+    }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             mainText: nextProps.question.question,
-            isDisabled: false
+            isDisabled: false,
+            progressColor: "info"
         });
+        this.moveProgressBar();
     }
 
 
-    disableButtons = () => {
+    disableButtonsAndResetTimer = () => {
+        clearInterval(this.state.interval);
         this.setState({
             isDisabled: true,
-            mainText: "Waiting for other players"
+            mainText: "Waiting for other players",
+            progress: 100
+        });
+    }
+
+    moveProgressBar = () => {
+        var progress;
+        
+        var interval = setInterval(() => {
+            progress = this.state.progress - 1;
+            this.setState({
+                progress: progress
+            });
+            if (this.state.progress === 0) {
+                this.setState({
+                    progressColor: "danger"
+                });
+
+                this.disableButtonsAndResetTimer();
+                this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", " ", this.props.roomCode);
+            }
+        }, 150);
+        this.setState({
+            interval: interval
         });
     }
 
     render() {
-                //<h5 className="question">{this.props.question.question}</h5>
         return (
             <div>
                 <p className="category">{this.props.question.category}</p>
                 <h5 className="question">{this.state.mainText}</h5>
+                <Progress animated color={this.state.progressColor} value={this.state.progress} />
+                <br />
                 {
                     this.props.question.alternatives.map((alt, index) => {
                         return (
@@ -49,7 +80,7 @@ export class Quiz extends React.Component {
                                 hubConnection={this.props.hubConnection}
                                 roomCode={this.props.roomCode}
                                 isDisabled={this.state.isDisabled}
-                                disablebuttons={() => this.disableButtons()}
+                                disablebuttons={() => this.disableButtonsAndResetTimer()}
                                 correctAnswer={this.props.question.correct_answer}
                             />
                         );

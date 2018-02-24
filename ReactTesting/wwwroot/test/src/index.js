@@ -24,7 +24,8 @@ class Game extends React.Component {
             hubConnection: null,
             players: [],
             roomCode: '',
-            showLoader: true
+            showLoader: true,
+            loaderText: "Connecting to server"
         };
     }
 
@@ -35,7 +36,7 @@ class Game extends React.Component {
             this.state.hubConnection
                 .start()
                 .then(() => this.connected())
-                .catch(err => console.log('Error while establishing connection :(', err));
+                .catch(err => this.connectionFailed());
 
             this.state.hubConnection.on('sendQuestion', (question) => {
                 //console.log(question);
@@ -79,6 +80,13 @@ class Game extends React.Component {
         });
     }
 
+    connectionFailed() {
+        console.log('Error while establishing connection :(');
+        this.setState({
+            loaderText: "Could not establish a connection to the server, please reload the page"
+        });
+    }
+
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.name);
     }
@@ -113,7 +121,11 @@ class Game extends React.Component {
     renderScoreBoard(players) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Score players={players} hubConnection={this.state.hubConnection} />
+                <Score
+                    players={players}
+                    roomCode={this.state.roomCode}
+                    hubConnection={this.state.hubConnection}
+                />
             </div>
             , document.getElementById('root'));
     }
@@ -144,10 +156,8 @@ class Game extends React.Component {
 
     render() {
         return (
-            //<input type="button" value="reset" onClick={() => this.resetAll()} />
-            //<Loader ref="loader" hidden />
             <div>
-                {this.state.showLoader ? <Loader /> : null}
+                {this.state.showLoader ? <Loader text={this.state.loaderText}/> : null}
                 <div className="tealGameContainer">
                     <JoinScreen
                         changeName={this.changeName}
