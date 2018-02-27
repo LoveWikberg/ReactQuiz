@@ -30,7 +30,17 @@ class Game extends React.Component {
     }
 
     componentDidMount = () => {
-        const hubConnection = new HubConnection('http://localhost:50083/quiz');
+        const hostname = window && window.location && window.location.hostname;
+        let backendHost;
+
+        if (hostname === 'localhost') {
+            backendHost = 'http://localhost:50083/quiz';
+        }
+        else {
+            backendHost = 'https://lovequiz.azurewebsites.net/quiz';
+        }
+
+        const hubConnection = new HubConnection(backendHost);
 
         this.setState({ hubConnection }, () => {
             this.state.hubConnection
@@ -157,7 +167,7 @@ class Game extends React.Component {
     render() {
         return (
             <div>
-                {this.state.showLoader ? <Loader text={this.state.loaderText}/> : null}
+                {this.state.showLoader ? <Loader text={this.state.loaderText} /> : null}
                 <div className="tealGameContainer">
                     <JoinScreen
                         changeName={this.changeName}

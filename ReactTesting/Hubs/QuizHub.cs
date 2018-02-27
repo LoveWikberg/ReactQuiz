@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace ReactTesting.Hubs
 {
@@ -47,7 +48,8 @@ namespace ReactTesting.Hubs
             {
                 GroupName = roomCode,
                 Players = new List<Player>(),
-                RoundCount = 0
+                RoundCount = 0,
+                //Timer = new Timer()
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
@@ -109,7 +111,7 @@ namespace ReactTesting.Hubs
             await SendQuestion(roomCode);
         }
 
-        async public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
+        public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
@@ -120,35 +122,46 @@ namespace ReactTesting.Hubs
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
                 System.Threading.Thread.Sleep(2000);
-                gameRoom.RoundCount += 1;
-                SetPoints(gameRoom);
-                if (gameRoom.RoundCount >= 3)
-                {
-                    if (gameRoom.Questions.Count != 0)
-                    {
-                        await ShowAnswers(gameRoom);
-                        gameRoom.RoundCount = 0;
-                    }
-                    else
-                    {
-                        await GameEnded(gameRoom);
-                    }
-                }
-                else
-                {
-                    if (gameRoom.Questions.Count != 0)
-                    {
-                        await SendQuestion(gameRoom.GroupName);
-                    }
-                    else
-                    {
-                        await GameEnded(gameRoom);
-                    }
-                }
-                ResetPlayerAnswers(gameRoom.Players);
+                AllPlayersHaveAnswered(gameRoom);
+
+                //await Task.Delay(2000);
+                //gameRoom.Timer.Interval = 2000;
+                //gameRoom.Timer.Start();
+                //gameRoom.Timer.Elapsed += delegate { AllPlayersHaveAnswered(gameRoom); };
+
             }
         }
 
+        async void AllPlayersHaveAnswered(GameRoom gameRoom)
+        {
+            //gameRoom.Timer.Stop();
+            gameRoom.RoundCount += 1;
+            SetPoints(gameRoom);
+            if (gameRoom.RoundCount >= 3)
+            {
+                if (gameRoom.Questions.Count != 0)
+                {
+                    await ShowAnswers(gameRoom);
+                    gameRoom.RoundCount = 0;
+                }
+                else
+                {
+                    await GameEnded(gameRoom);
+                }
+            }
+            else
+            {
+                if (gameRoom.Questions.Count != 0)
+                {
+                    await SendQuestion(gameRoom.GroupName);
+                }
+                else
+                {
+                    await GameEnded(gameRoom);
+                }
+            }
+            ResetPlayerAnswers(gameRoom.Players);
+        }
         async Task GameEnded(GameRoom gameRoom)
         {
             int highestScore = gameRoom.Players.Max(p => p.Points);
@@ -182,6 +195,8 @@ namespace ReactTesting.Hubs
         {
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
+            System.Threading.Thread.Sleep(10000);
+            await SendQuestion(gameRoom.GroupName);
         }
 
         public void ResetGame()

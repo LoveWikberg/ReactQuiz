@@ -8,7 +8,8 @@ export class Score extends React.Component {
         super(props);
 
         this.state = {
-            players: []
+            players: [],
+            timer: 10
         };
     }
 
@@ -19,10 +20,28 @@ export class Score extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.startTimer();
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
-            player: nextProps.players
+            player: nextProps.players,
+            timer: 10
         });
+        this.startTimer();
+    }
+
+    startTimer() {
+        var time = this.state.timer;
+        var interval = setInterval(() => {
+            time--;
+            this.setState({
+                timer: time
+            });
+            if (time == 0)
+                clearInterval(interval);
+        }, 1000);
     }
 
     //Use this later for score animation
@@ -41,6 +60,7 @@ export class Score extends React.Component {
         return (
             <div>
                 <h1>Current score</h1>
+                <p>The next round starts in {this.state.timer}</p>
                 <table>
                     <thead>
                         <tr id="head">
