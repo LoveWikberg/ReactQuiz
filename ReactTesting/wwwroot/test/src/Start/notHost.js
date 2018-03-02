@@ -1,12 +1,12 @@
 ﻿import React from 'react';
+import './notHost.css';
 
 export class NotHost extends React.Component {
 
     render() {
         return (
             <div>
-                <h3>Waitng for host to start game</h3>
-                <p>Number of Questions: </p>
+                <h3 className="information">Waiting for the host to start the game</h3>
             </div>
         );
     }

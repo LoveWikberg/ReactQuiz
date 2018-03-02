@@ -23,9 +23,7 @@ export class StartScreen extends React.Component {
     }
 
     componentDidMount = () => {
-        alert("componentDidMount");
         this.props.hubConnection.on("updatePlayerList", (players) => {
-            alert("updatePlayerList");
             this.setState({
                 players: players
             });
@@ -60,14 +58,15 @@ export class StartScreen extends React.Component {
             <div>
                 <h1 className="startTitle" >Room {this.props.roomCode}</h1>
                 {this.checkIfCreator()}
-                <h3 className="playersHeadline">Players</h3>
+                <div className="playerContainer">
                 {
-                    this.state.players.map((player) => {
-                        return (
-                            <p>{player.name}</p>
+                    this.state.players.map((player, key) => {
+                            return (
+                                <h5 key={key}>{player.name}</h5>
                         );
                     })
                 }
+                    </div>
             </div>
         );
     }

@@ -31,7 +31,9 @@ namespace ReactTesting
                 builder
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .WithOrigins("http://localhost:3000");
+                .AllowAnyOrigin();
+                //.WithOrigins("https://drmy-fei-b14.netlify.com");
+                //.WithOrigins("http://localhost:3000");
             }));
             services.AddSignalR();
             services.AddMvc();

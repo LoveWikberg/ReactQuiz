@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace ReactTesting.Hubs
 {
@@ -32,6 +33,8 @@ namespace ReactTesting.Hubs
                 gameRoom.Players.Remove(player);
                 Clients.AllExcept(ExcludedIds(gameRoom.GroupName))
                     .InvokeAsync("updatePlayerList", gameRoom.Players);
+                if (gameRoom.Players == null)
+                    gameRooms.Remove(gameRoom);
             }
             return base.OnDisconnectedAsync(exception);
         }
@@ -45,7 +48,8 @@ namespace ReactTesting.Hubs
             {
                 GroupName = roomCode,
                 Players = new List<Player>(),
-                RoundCount = 0
+                RoundCount = 0,
+                //Timer = new Timer()
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
@@ -57,7 +61,7 @@ namespace ReactTesting.Hubs
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
-            if (gameRoom == null)
+            if (gameRoom == null || gameRoom.Players.Count >= 8)
             {
                 await Clients.Client(connId).InvokeAsync("connectionFail");
             }
@@ -107,47 +111,57 @@ namespace ReactTesting.Hubs
             await SendQuestion(roomCode);
         }
 
-        async public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
+        public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
             var player = gameRoom.Players.SingleOrDefault(p => p.ConnectionId == connId);
             player.HasAnswered = true;
             player.Answer = answer;
-            //players.SingleOrDefault(p => p.ConnectionId == connId).HasAnswered = true;
-            //players.SingleOrDefault(p => p.ConnectionId == connId).Answer = answer;
 
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
-                gameRoom.RoundCount += 1;
-                SetPoints(gameRoom);
-                if (gameRoom.RoundCount >= 3)
-                {
-                    if (gameRoom.Questions.Count != 0)
-                    {
-                        await ShowAnswers(gameRoom);
-                        gameRoom.RoundCount = 0;
-                    }
-                    else
-                    {
-                        await GameEnded(gameRoom);
-                    }
-                }
-                else
-                {
-                    if (gameRoom.Questions.Count != 0)
-                    {
-                        await SendQuestion(gameRoom.GroupName);
-                    }
-                    else
-                    {
-                        await GameEnded(gameRoom);
-                    }
-                }
-                ResetPlayerAnswers(gameRoom.Players);
+                System.Threading.Thread.Sleep(2000);
+                AllPlayersHaveAnswered(gameRoom);
+
+                //await Task.Delay(2000);
+                //gameRoom.Timer.Interval = 2000;
+                //gameRoom.Timer.Start();
+                //gameRoom.Timer.Elapsed += delegate { AllPlayersHaveAnswered(gameRoom); };
+
             }
         }
 
+        async void AllPlayersHaveAnswered(GameRoom gameRoom)
+        {
+            //gameRoom.Timer.Stop();
+            gameRoom.RoundCount += 1;
+            SetPoints(gameRoom);
+            if (gameRoom.RoundCount >= 3)
+            {
+                if (gameRoom.Questions.Count != 0)
+                {
+                    await ShowAnswers(gameRoom);
+                    gameRoom.RoundCount = 0;
+                }
+                else
+                {
+                    await GameEnded(gameRoom);
+                }
+            }
+            else
+            {
+                if (gameRoom.Questions.Count != 0)
+                {
+                    await SendQuestion(gameRoom.GroupName);
+                }
+                else
+                {
+                    await GameEnded(gameRoom);
+                }
+            }
+            ResetPlayerAnswers(gameRoom.Players);
+        }
         async Task GameEnded(GameRoom gameRoom)
         {
             int highestScore = gameRoom.Players.Max(p => p.Points);
@@ -164,6 +178,7 @@ namespace ReactTesting.Hubs
                 await Clients.Group(gameRoom.GroupName).InvokeAsync("gameWon", gameRoom.Players
                     .OrderByDescending(p => p.Points), winner);
             }
+            gameRooms.Remove(gameRoom);
         }
 
         bool IsDraw(int score, List<Player> players)
@@ -180,6 +195,8 @@ namespace ReactTesting.Hubs
         {
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
+            System.Threading.Thread.Sleep(10000);
+            await SendQuestion(gameRoom.GroupName);
         }
 
         public void ResetGame()
@@ -211,8 +228,6 @@ namespace ReactTesting.Hubs
         public async Task SendQuestion(string roomCode)
         {
             var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
-            //var question = GetRandomQuestion();
-            //await Clients.All.InvokeAsync("sendQuestion", question);
             if (room.Questions.Count == 0)
             {
                 await ShowAnswers(room);
@@ -221,7 +236,6 @@ namespace ReactTesting.Hubs
             {
                 room.CurrentQuestion = GetRandomQuestion(room.Questions);
                 await Clients.Group(room.GroupName).InvokeAsync("sendQuestion", room.CurrentQuestion);
-                //await Clients.All.InvokeAsync("sendQuestion", room.CurrentQuestion);
             }
         }
 
@@ -245,7 +259,6 @@ namespace ReactTesting.Hubs
             };
             questions.RemoveAt(index);
             return question;
-            //return question;
         }
     }
 }

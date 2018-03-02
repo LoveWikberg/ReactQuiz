@@ -7,3 +7,20 @@
     margin-bottom: 5%;
     margin-top: 5%;
 }
+
+.playerContainer {
+    text-align: center;
+    margin-top: 10%;
+    border-radius: 10px;
+    min-height: 27vh;
+    background-color: #05555F;
+    padding: 2%;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -moz-column-fill: balance;
+    column-fill: balance;
+    -webkit-column-rule: 4px  #ff00ff; 
+    -moz-column-rule: 4px  #ff00ff; 
+    column-rule: 4px  #ff00ff;
+}

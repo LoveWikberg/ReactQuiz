@@ -1,0 +1,14 @@
+﻿.coverScreen{
+    background-color: rgba(0, 0, 0, 0.8);
+    position:fixed;
+    height:100%;
+    width:100%;
+    top:0;
+}
+
+.spinnerAndInfo {
+    color:white;
+    position: fixed;
+    left:40%;
+    top: 30vh;
+}

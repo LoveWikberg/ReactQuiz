@@ -8,8 +8,10 @@ import { StartScreen } from './Start/startScreen';
 import { JoinScreen } from './Start/joinScreen';
 import { Score } from './Quiz/score';
 import { GameEnd } from './Quiz/gameEnd';
+import { Loader } from './Start/loader';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container, Row, Col } from 'reactstrap';
+//import FontAwesome from 'react-fontawesome';
 
 
 class Game extends React.Component {
@@ -21,29 +23,33 @@ class Game extends React.Component {
             name: '',
             hubConnection: null,
             players: [],
-            roomCode: ''
+            roomCode: '',
+            showLoader: true,
+            loaderText: "Connecting to server"
         };
     }
 
     componentDidMount = () => {
-        //this.setState({
-        //    hubConnection: new HubConnection('http://localhost:50083/quiz')
-        //}, () => {
-        //    this.state.hubConnection
-        //        .start()
-        //        .then(() => console.log("connected"))
-        //        .catch(err => console.log('Error while establishing connection :(', err));
-        //});
-        const hubConnection = new HubConnection('http://localhost:50083/quiz');
+        const hostname = window && window.location && window.location.hostname;
+        let backendHost;
+
+        if (hostname === 'localhost') {
+            backendHost = 'http://localhost:50083/quiz';
+        }
+        else {
+            backendHost = 'https://lovequiz.azurewebsites.net/quiz';
+        }
+
+        const hubConnection = new HubConnection(backendHost);
 
         this.setState({ hubConnection }, () => {
             this.state.hubConnection
                 .start()
-                .then(() => console.log("connected"))
-                .catch(err => console.log('Error while establishing connection :(', err));
+                .then(() => this.connected())
+                .catch(err => this.connectionFailed());
 
             this.state.hubConnection.on('sendQuestion', (question) => {
-                console.log(question);
+                //console.log(question);
                 this.renderQuestion(question);
             });
             this.state.hubConnection.on('showStartScreen', (isCreator, roomCode, players) => {
@@ -53,14 +59,8 @@ class Game extends React.Component {
                 });
                 this.renderStartScreen(isCreator);
             });
-            //this.state.hubConnection.on('updatePlayerList', (players) => {
-            //    console.log(players);
-            //    this.setState({
-            //        name: "basse"
-            //    })
-            //});
             this.state.hubConnection.on("connectionFail", () => {
-                alert("connedction failed");
+                alert("The room don't excist or is full");
             });
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderScoreBoard(players);
@@ -80,6 +80,20 @@ class Game extends React.Component {
             this.state.hubConnection.on('gameWon', (players, winner) => {
                 this.renderGameEnd(players, "And the winner is... " + winner);
             });
+        });
+    }
+
+    connected() {
+        console.log("connected");
+        this.setState({
+            showLoader: false
+        });
+    }
+
+    connectionFailed() {
+        console.log('Error while establishing connection :(');
+        this.setState({
+            loaderText: "Could not establish a connection to the server, please reload the page"
         });
     }
 
@@ -117,7 +131,11 @@ class Game extends React.Component {
     renderScoreBoard(players) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Score players={players} hubConnection={this.state.hubConnection} />
+                <Score
+                    players={players}
+                    roomCode={this.state.roomCode}
+                    hubConnection={this.state.hubConnection}
+                />
             </div>
             , document.getElementById('root'));
     }
@@ -125,7 +143,11 @@ class Game extends React.Component {
     renderQuestion(question) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Quiz question={question} hubConnection={this.state.hubConnection} />
+                <Quiz
+                    question={question}
+                    hubConnection={this.state.hubConnection}
+                    roomCode={this.state.roomCode}
+                />
             </div>
             , document.getElementById('root'));
     }
@@ -144,15 +166,17 @@ class Game extends React.Component {
 
     render() {
         return (
-            //<input type="button" value="reset" onClick={() => this.resetAll()} />
-            <div className="tealGameContainer">
-                <JoinScreen
-                    changeName={this.changeName}
-                    changeRoomCode={this.changeRoomCode}
-                    hubConnection={this.state.hubConnection}
-                    name={this.state.name}
-                    roomCode={this.state.roomCode}
-                />
+            <div>
+                {this.state.showLoader ? <Loader text={this.state.loaderText} /> : null}
+                <div className="tealGameContainer">
+                    <JoinScreen
+                        changeName={this.changeName}
+                        changeRoomCode={this.changeRoomCode}
+                        hubConnection={this.state.hubConnection}
+                        name={this.state.name}
+                        roomCode={this.state.roomCode}
+                    />
+                </div>
             </div>
         );
     }
