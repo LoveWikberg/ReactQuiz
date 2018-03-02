@@ -12,7 +12,7 @@ export class Loader extends React.Component {
                         name="spinner"
                         size="5x"
                         spin
-                    ></FontAwesome>
+                    />
                     <h2>{this.props.text}</h2>
                 </div>
             </div>

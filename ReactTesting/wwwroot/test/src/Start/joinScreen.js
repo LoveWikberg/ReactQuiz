@@ -1,5 +1,7 @@
 ﻿import React from 'react';
-import { Button, Input } from 'reactstrap';
+import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { FacebookLogin } from '../Facebook/facebookLogin';
+import FontAwesome from 'react-fontawesome';
 import '../index.css';
 import './joinScreen.css';
 
@@ -34,19 +36,27 @@ export class JoinScreen extends React.Component {
 
     render() {
         return (
-            <div>
+            <div><div data-href="https://www.google.se/" data-layout="button" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3000%2Ft.html%3Froomcode%3DH7AS&amp;src=sdkpreparse">Dela</a></div>
                 <h1 className="title" >Quiz of Love</h1>
 
+                <InputGroup className="inputSpacing">
+                    <Input
+                        placeholder="Username (max 12 characters)"
+                        onChange={(e) => this.changeName(e)}
+                        max="12"
+                        value={this.props.name}
+                    />
+                    <InputGroupAddon addonType="append">
+                        <FacebookLogin onLogin={this.props.onLogin} />
+                    </InputGroupAddon>
+                </InputGroup >
+
                 <Input className="inputSpacing"
-                    placeholder="User name (max 12 characters)"
-                    onChange={(e) => this.changeName(e)}
-                    max="12"
-                />
-                <Input className="inputSpacing "
                     placeholder="Room code"
                     value={this.props.roomCode}
                     onChange={(e) => this.changeRoomCode(e)}
-                max="4"/>
+                    max="4"
+                />
                 <Button className="watermelonBtn btnSpacing" onClick={() => this.joinRoom()} block>Join room</Button>
                 <h4>Or...</h4>
                 <Button className="matteBtn btnSpacing" onClick={() => this.createRoom()} block>Create room</Button>

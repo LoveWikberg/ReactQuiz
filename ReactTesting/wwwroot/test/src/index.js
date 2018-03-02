@@ -1,21 +1,17 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-//import { HubConnection } from '@aspnet/signalr-client';
 import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js';
 import './index.css';
 import { Quiz } from './Quiz/Quiz.js';
 import { StartScreen } from './Start/startScreen';
 import { JoinScreen } from './Start/joinScreen';
-import { Score } from './Quiz/score';
+import { RoundEnd } from './Quiz/roundEnd';
 import { GameEnd } from './Quiz/gameEnd';
 import { Loader } from './Start/loader';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Container, Row, Col } from 'reactstrap';
-//import FontAwesome from 'react-fontawesome';
 
 
 class Game extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -25,7 +21,7 @@ class Game extends React.Component {
             players: [],
             roomCode: '',
             showLoader: true,
-            loaderText: "Connecting to server"
+            loaderText: "Connecting to the server"
         };
     }
 
@@ -49,7 +45,6 @@ class Game extends React.Component {
                 .catch(err => this.connectionFailed());
 
             this.state.hubConnection.on('sendQuestion', (question) => {
-                //console.log(question);
                 this.renderQuestion(question);
             });
             this.state.hubConnection.on('showStartScreen', (isCreator, roomCode, players) => {
@@ -63,7 +58,7 @@ class Game extends React.Component {
                 alert("The room don't excist or is full");
             });
             this.state.hubConnection.on('showAnswers', (players) => {
-                this.renderScoreBoard(players);
+                this.renderCurrentScore(players);
             });
             this.state.hubConnection.on('gameDraw', (players, drawers) => {
                 var endMessage = "And the winner is... there is no winner. It's a draw between";
@@ -83,11 +78,28 @@ class Game extends React.Component {
         });
     }
 
+    encodeQueryData(data) {
+        let ret = [];
+        for (let d in data)
+            ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+        return ret.join('&');
+    }
+
     connected() {
         console.log("connected");
         this.setState({
             showLoader: false
         });
+
+        var data = { 'roomcode': 'H7AS' };
+        var querystring = this.encodeQueryData(data);
+        ////var url = new URL(querystring);
+        var url = new URL(`http://localhost:3000/t.html?${querystring}`);
+        //var c = url.searchParams.get("firstname");
+        ////var url_string = "http://www.example.com/t.html?a=1&b=3&c=m2-m3-m4-m5"; //window.location.href
+        ////var url = new URL(url_string);
+        ////var c = url.searchParams.get("c");
+        alert(url);
     }
 
     connectionFailed() {
@@ -99,12 +111,6 @@ class Game extends React.Component {
 
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.name);
-    }
-
-    resetAll() {
-        this.state.hubConnection.invoke('resetGame')
-            .then(() => alert("reseted"))
-            .catch(() => alert("reset failed"));
     }
 
     renderGameEnd(players, endMessage) {
@@ -128,10 +134,10 @@ class Game extends React.Component {
             , document.getElementById('root'));
     }
 
-    renderScoreBoard(players) {
+    renderCurrentScore(players) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Score
+                <RoundEnd
                     players={players}
                     roomCode={this.state.roomCode}
                     hubConnection={this.state.hubConnection}
@@ -164,6 +170,18 @@ class Game extends React.Component {
         });
     }
 
+    onFacebookLogin = (loginStatus, resultObject) => {
+        console.log(resultObject);
+        if (loginStatus === true) {
+            this.setState({
+                name: resultObject.user.name
+            });
+        } else {
+            alert('Facebook login error');
+        }
+    }
+  
+
     render() {
         return (
             <div>
@@ -175,6 +193,7 @@ class Game extends React.Component {
                         hubConnection={this.state.hubConnection}
                         name={this.state.name}
                         roomCode={this.state.roomCode}
+                        onLogin={this.onFacebookLogin}
                     />
                 </div>
             </div>

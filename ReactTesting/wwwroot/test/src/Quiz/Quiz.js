@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Button, Progress } from 'reactstrap';
+import { Progress } from 'reactstrap';
 import { Alternative } from './alternative';
 import './quiz.css';
 

@@ -1,8 +1,4 @@
-﻿/*.niceShuffle{
-    transition: all 1250ms ease;
-}*/
-
-table {
+﻿table {
     margin-top: 10%;
     background-color: #05555F;
     color: white;
@@ -18,8 +14,6 @@ tr:not(#head) {
     border-top: 1px solid #CCDFCB;
 }
 
-.podium {
-}
 
 .gold {
     color: rgba(255,215,0, 0.9);

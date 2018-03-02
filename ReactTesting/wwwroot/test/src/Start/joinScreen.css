@@ -1,12 +1,16 @@
-﻿.title{
-    margin-bottom:15%;
+﻿.title {
+    margin-bottom: 15%;
 }
 
-.inputSpacing{
-    margin-bottom:10%;
+.inputSpacing {
+    margin-bottom: 10%;
 }
 
-.btnSpacing{
-    margin-top:5%;
-    margin-bottom:5%;
+.btnSpacing {
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.facebook {
+    background-color: #3b5998 !important;
 }

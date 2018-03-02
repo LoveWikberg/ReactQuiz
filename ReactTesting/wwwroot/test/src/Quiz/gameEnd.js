@@ -1,11 +1,7 @@
 ﻿import React from 'react';
-import { Button, Table } from 'reactstrap';
+import { Score } from './score';
 
 export class GameEnd extends React.Component {
-
-    componentDidMount() {
-
-    }
 
     render() {
         return (
@@ -13,29 +9,7 @@ export class GameEnd extends React.Component {
                 <h2>
                     {this.props.endMessage}
                 </h2>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Player</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            this.props.players.map(function (player, index) {
-                                console.log(player);
-                                return (
-                                    <tr>
-                                        <th scope="row">{index + 1}</th>
-                                        <td>{player.name}</td>
-                                        <td>{player.points}</td>
-                                    </tr>
-                                );
-                            })
-                        }
-                    </tbody>
-                </Table>
+                <Score players={this.props.players} />
             </div>
         );
     }

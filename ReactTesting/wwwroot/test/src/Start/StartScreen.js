@@ -1,7 +1,6 @@
 ﻿import React from 'react';
 import { NotHost } from './notHost';
 import { Host } from './host';
-import { Table } from 'reactstrap';
 import '../index.css';
 import './startScreen.css';
 
