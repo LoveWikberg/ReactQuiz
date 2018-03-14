@@ -36,7 +36,7 @@ export class JoinScreen extends React.Component {
 
     render() {
         return (
-            <div><div data-href="https://www.google.se/" data-layout="button" data-size="small" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3000%2Ft.html%3Froomcode%3DH7AS&amp;src=sdkpreparse">Dela</a></div>
+            <div>
                 <h1 className="title" >Quiz of Love</h1>
 
                 <InputGroup className="inputSpacing">

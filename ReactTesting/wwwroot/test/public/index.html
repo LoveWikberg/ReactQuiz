@@ -24,9 +24,21 @@
 </head>
   <body>
       <script>
+          var hostname = window && window.location && window.location.hostname;
+          var id;
+
+          if (hostname === 'localhost') {
+              id = '338550936653050';
+          }
+          else {
+              id = '424287814675929';
+          }
+
+          alert("Hostname: " + hostname + " | id: " + id);
+
           window.fbAsyncInit = function () {
               FB.init({
-                  appId: '338550936653050',
+                  appId: id,
                   cookie: true,
                   xfbml: true,
                   version: 'v2.12'

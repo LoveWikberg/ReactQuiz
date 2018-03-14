@@ -2,6 +2,7 @@
 using ReactTesting.Data;
 using ReactTesting.Data.Models;
 using ReactTesting.ExtensionMethods;
+using ReactTesting.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -209,7 +210,7 @@ namespace ReactTesting.Hubs
         {
             foreach (var player in gameRoom.Players)
             {
-                if (player.Answer == gameRoom.CurrentQuestion.Correct_answer)
+                if (player.Answer == gameRoom.CurrentQuestion.CorrectAnswer)
                 {
                     player.Points += 1;
                 }
@@ -244,14 +245,14 @@ namespace ReactTesting.Hubs
             Random random = new Random();
             int index = random.Next(0, questions.Count - 1);
 
-            var alternatives = questions[index].Incorrect_answers
-                .Append(questions[index].Correct_answer).ToList();
+            var alternatives = questions[index].IncorrectAnswers
+                .Append(questions[index].CorrectAnswer).ToList();
             alternatives.Shuffle();
 
             Quiz question = new Quiz
             {
                 Category = questions[index].Category,
-                Correct_answer = questions[index].Correct_answer,
+                CorrectAnswer = questions[index].CorrectAnswer,
                 Difficulty = questions[index].Difficulty,
                 Question = questions[index].Question,
                 Type = questions[index].Type,

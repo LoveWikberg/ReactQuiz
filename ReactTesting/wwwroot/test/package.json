@@ -9,6 +9,7 @@
     "react-fontawesome": "^1.6.1",
     "react-native-signalr": "^1.0.6",
     "react-scripts": "1.1.0",
+    "react-share": "^2.0.0",
     "reactstrap": "^5.0.0-beta",
     "repair": "^0.1.1"
   },

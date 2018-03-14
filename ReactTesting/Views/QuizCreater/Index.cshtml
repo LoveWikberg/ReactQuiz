@@ -1,0 +1,28 @@
+﻿@model Quiz
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<form asp-action="index" asp-controller="quizcreater">
+    <label asp-for="Question"></label>
+    <input asp-for="Question" />
+    <hr />
+    <label asp-for="CorrectAnswer"></label>
+    <input asp-for="CorrectAnswer" />
+    <hr />
+    <label asp-for="IncorrectAnswers"></label>
+    <br />
+    <input asp-for="IncorrectAnswers[0]" />
+    <br />
+    <input asp-for="IncorrectAnswers[1]" />
+    <br />
+    <input asp-for="IncorrectAnswers[2]" />
+    <br />
+    <input asp-for="IncorrectAnswers[3]" />
+    <hr />
+    <label asp-for="Difficulty"></label>
+    <input asp-for="Difficulty" />
+</form>

@@ -33,7 +33,7 @@ class Game extends React.Component {
             backendHost = 'http://localhost:50083/quiz';
         }
         else {
-            backendHost = 'https://lovequiz.azurewebsites.net/quiz';
+            backendHost = 'https://quizoflove.azurewebsites.net/quiz';
         }
 
         const hubConnection = new HubConnection(backendHost);
@@ -55,7 +55,7 @@ class Game extends React.Component {
                 this.renderStartScreen(isCreator);
             });
             this.state.hubConnection.on("connectionFail", () => {
-                alert("The room don't excist or is full");
+                alert("The room doesn't excist or is full");
             });
             this.state.hubConnection.on('showAnswers', (players) => {
                 this.renderCurrentScore(players);
@@ -91,15 +91,10 @@ class Game extends React.Component {
             showLoader: false
         });
 
-        var data = { 'roomcode': 'H7AS' };
-        var querystring = this.encodeQueryData(data);
-        ////var url = new URL(querystring);
-        var url = new URL(`http://localhost:3000/t.html?${querystring}`);
-        //var c = url.searchParams.get("firstname");
-        ////var url_string = "http://www.example.com/t.html?a=1&b=3&c=m2-m3-m4-m5"; //window.location.href
-        ////var url = new URL(url_string);
-        ////var c = url.searchParams.get("c");
-        alert(url);
+        //var data = { 'roomcode': 'H7AS' };
+        //var querystring = this.encodeQueryData(data);
+        //var url = new URL(`https://dreamy-fermi-b142d0.netlify.com/t.html?${querystring}`);
+        //alert(url);
     }
 
     connectionFailed() {
@@ -172,9 +167,11 @@ class Game extends React.Component {
 
     onFacebookLogin = (loginStatus, resultObject) => {
         console.log(resultObject);
+        // Remove whitespaces
+        var name = resultObject.user.name.replace(/ /g, '');
         if (loginStatus === true) {
             this.setState({
-                name: resultObject.user.name
+                name: name
             });
         } else {
             alert('Facebook login error');

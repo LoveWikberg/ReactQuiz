@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ReactTesting.Data;
 using ReactTesting.Hubs;
+using ReactTesting.Models;
+using ReactTesting.Models.Data;
 
 namespace ReactTesting
 {
@@ -35,6 +37,7 @@ namespace ReactTesting
                 //.WithOrigins("https://drmy-fei-b14.netlify.com");
                 //.WithOrigins("http://localhost:3000");
             }));
+            services.AddTransient<FireBaseManager<Quiz>>();
             services.AddSignalR();
             services.AddMvc();
         }
@@ -52,7 +55,7 @@ namespace ReactTesting
             {
                 routes.MapHub<QuizHub>("quiz");
             });
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

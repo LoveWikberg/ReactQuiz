@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ReactTesting.ExtensionMethods;
+using ReactTesting.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

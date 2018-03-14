@@ -5,12 +5,10 @@ import { Button } from 'reactstrap';
 export class FacebookLogin extends React.Component {
 
     componentDidMount() {
-        alert("componentDidMount Facebook");
         document.addEventListener('FBObjectReady', this.initializeFacebookLogin());
     }
 
     componentWillUnmount() {
-        alert("componentWillUnmount Facebook");
         document.removeEventListener('FBObjectReady', this.initializeFacebookLogin());
     }
 
@@ -18,7 +16,6 @@ export class FacebookLogin extends React.Component {
      * Init FB object and check Facebook Login status
      */
     initializeFacebookLogin = () => {
-        alert("initializeFacebookLogin");
         this.FB = window.FB;
         this.checkLoginStatus();
     }
@@ -65,11 +62,6 @@ export class FacebookLogin extends React.Component {
 
     onFacebookLogin = (loginStatus, resultObject) => {
         console.log(resultObject);
-        if (loginStatus === true) {
-            alert('Facebook login success');
-        } else {
-            alert('Facebook login error');
-        }
     }
 
     render() {
