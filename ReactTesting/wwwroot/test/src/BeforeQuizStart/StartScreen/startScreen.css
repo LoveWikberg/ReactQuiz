@@ -1,5 +1,5 @@
 ﻿.startTitle {
-    margin-bottom: 25%;
+    margin-bottom: 5%;
 }
 
 .playersHeadline {
@@ -23,4 +23,13 @@
     -webkit-column-rule: 4px  #ff00ff; 
     -moz-column-rule: 4px  #ff00ff; 
     column-rule: 4px  #ff00ff;
+}
+
+.facebookShare {
+    background-color: #3b5998 !important;
+    color: white !important;
+    padding: 2% !important;
+    width: 100% !important;
+    margin-bottom: 15%;
+    border-radius:10px;
 }

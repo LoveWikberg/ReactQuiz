@@ -3,7 +3,12 @@ import FontAwesome from 'react-fontawesome';
 import { Button } from 'reactstrap';
 
 export class FacebookLogin extends React.Component {
-
+    constructor(props) {
+        super(props);
+        this.state = {
+            showFacebookBtn: false
+        };
+    }
     componentDidMount() {
         document.addEventListener('FBObjectReady', this.initializeFacebookLogin());
     }
@@ -16,14 +21,30 @@ export class FacebookLogin extends React.Component {
      * Init FB object and check Facebook Login status
      */
     initializeFacebookLogin = () => {
-        this.FB = window.FB;
-        this.checkLoginStatus();
+        var iterations = 0;
+        var interval = setInterval(() => {
+            if (window.FB !== undefined) {
+                clearInterval(interval);
+                this.FB = window.FB;
+                this.checkLoginStatus();
+            }
+            else if (iterations >= 30)
+                clearInterval(interval);
+            iterations++;
+        }, 50);
+        //this.checkLoginStatus();
     }
 
     /**
      * Check login status
      */
     checkLoginStatus = () => {
+        if (this.FB === undefined) {
+            return;
+        }
+        this.setState({
+            showFacebookBtn: true
+        });
         this.FB.getLoginStatus(this.facebookLoginHandler);
     }
 
@@ -31,9 +52,10 @@ export class FacebookLogin extends React.Component {
      * Check login status and call login api is user is not logged in
      */
     facebookLogin = () => {
-        alert("clicked");
-        if (!this.FB) return;
-        alert("FB is defined");
+        console.log(window.FB);
+        if (this.FB === undefined) {
+            return;
+        }
         this.FB.getLoginStatus(response => {
             if (response.status === 'connected') {
                 this.facebookLoginHandler(response);
@@ -67,15 +89,17 @@ export class FacebookLogin extends React.Component {
     render() {
         return (
             <div>
-                <Button
-                    className="facebook"
-                    onClick={this.facebookLogin}
-                >
-                    <FontAwesome
-                        name="facebook-square"
-                        size="2x"
-                    />
-                </Button>
+                {this.state.showFacebookBtn ?
+                    <Button
+                        className="facebook"
+                        onClick={this.facebookLogin}
+                    >
+                        <FontAwesome
+                            name="facebook-square"
+                            size="2x"
+                        />
+                    </Button>
+                    : null}
             </div>
         );
     }

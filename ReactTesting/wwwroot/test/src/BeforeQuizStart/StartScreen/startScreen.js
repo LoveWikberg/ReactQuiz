@@ -1,9 +1,11 @@
 ﻿import React from 'react';
-import { NotHost } from './notHost';
-import { Host } from './host';
-import '../index.css';
+import FontAwesome from 'react-fontawesome';
+import { NotHost } from '../NotHost/notHost';
+import { Host } from '../Host/host';
+import '../../index.css';
 import './startScreen.css';
 import { FacebookShareButton } from 'react-share';
+
 
 export class StartScreen extends React.Component {
 
@@ -74,13 +76,20 @@ export class StartScreen extends React.Component {
     render() {
         return (
             <div>
+                <h1 className="startTitle" >Room {this.props.roomCode}</h1>
                 <FacebookShareButton
                     className="facebookShare"
                     url={this.state.inviteUrl}
-                    children="Share on facebook"
-                />
-                <h1 className="startTitle" >Room {this.props.roomCode}</h1>
+                >
+                    <FontAwesome
+                        name="facebook-square"
+                        size="2x"
+                    />
+                    &nbsp; Invite friend
+                    </FacebookShareButton>
+
                 {this.checkIfCreator()}
+
                 <div className="playerContainer">
                     {
                         this.state.players.map((player, key) => {

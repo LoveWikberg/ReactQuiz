@@ -1,13 +1,13 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js';
+import { Quiz } from './AfterQuizStart/Quiz/Quiz';
+import { RoundEnd } from './AfterQuizStart/RoundEnd/roundEnd';
+import { GameEnd } from './AfterQuizStart/GameEnd/gameEnd';
+import { StartScreen } from './BeforeQuizStart/StartScreen/startScreen';
+import { JoinScreen } from './BeforeQuizStart/JoinScreen/joinScreen';
+import { Loader } from './BeforeQuizStart/Loader/loader';
 import './index.css';
-import { Quiz } from './Quiz/Quiz.js';
-import { StartScreen } from './Start/startScreen';
-import { JoinScreen } from './Start/joinScreen';
-import { RoundEnd } from './Quiz/roundEnd';
-import { GameEnd } from './Quiz/gameEnd';
-import { Loader } from './Start/loader';
 import 'bootstrap/dist/css/bootstrap.css';
 
 
@@ -91,10 +91,13 @@ class Game extends React.Component {
             showLoader: false
         });
 
-        //var data = { 'roomcode': 'H7AS' };
-        //var querystring = this.encodeQueryData(data);
-        //var url = new URL(`https://dreamy-fermi-b142d0.netlify.com/t.html?${querystring}`);
-        //alert(url);
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('roomcode')) {
+            const code = urlParams.get('roomcode');
+            this.setState({
+                roomCode: code
+            });
+        }
     }
 
     connectionFailed() {
@@ -168,16 +171,17 @@ class Game extends React.Component {
     onFacebookLogin = (loginStatus, resultObject) => {
         console.log(resultObject);
         // Remove whitespaces
-        var name = resultObject.user.name.replace(/ /g, '');
+        //var name = resultObject.user.name.replace(/ /g, '');
+        var name = resultObject.user.name.split(" ");
         if (loginStatus === true) {
             this.setState({
-                name: name
+                name: name[0]
             });
         } else {
             alert('Facebook login error');
         }
     }
-  
+
 
     render() {
         return (

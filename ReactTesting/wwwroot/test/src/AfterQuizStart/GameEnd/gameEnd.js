@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Score } from './score';
+import { Score } from '../Score/score';
 
 export class GameEnd extends React.Component {
 

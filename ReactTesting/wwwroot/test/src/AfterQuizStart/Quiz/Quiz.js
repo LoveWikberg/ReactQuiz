@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Progress } from 'reactstrap';
-import { Alternative } from './alternative';
+import { Alternative } from '../Alternative/alternative';
 import './quiz.css';
 
 export class Quiz extends React.Component {

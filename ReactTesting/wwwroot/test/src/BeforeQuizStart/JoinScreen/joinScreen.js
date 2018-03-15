@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
-import { FacebookLogin } from '../Facebook/facebookLogin';
+import { FacebookLogin } from '../../Facebook/facebookLogin';
 import FontAwesome from 'react-fontawesome';
-import '../index.css';
+import '../../index.css';
 import './joinScreen.css';
 
 export class JoinScreen extends React.Component {
@@ -41,7 +41,7 @@ export class JoinScreen extends React.Component {
 
                 <InputGroup className="inputSpacing">
                     <Input
-                        placeholder="Username (max 12 characters)"
+                        placeholder="Username (max 12 chars)"
                         onChange={(e) => this.changeName(e)}
                         max="12"
                         value={this.props.name}

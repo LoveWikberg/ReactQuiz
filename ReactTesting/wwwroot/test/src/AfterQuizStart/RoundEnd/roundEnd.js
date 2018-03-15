@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Score } from './score';
+import { Score } from '../Score/score';
 
 export class RoundEnd extends React.Component {
 
@@ -7,7 +7,7 @@ export class RoundEnd extends React.Component {
         super(props);
 
         this.state = {
-            timer: 10
+            timer: 7
         };
     }
 
@@ -17,7 +17,7 @@ export class RoundEnd extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            timer: 10
+            timer: 7
         });
         this.startTimer();
     }
