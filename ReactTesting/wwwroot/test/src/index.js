@@ -1,21 +1,17 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
-//import { HubConnection } from '@aspnet/signalr-client';
 import { HubConnection } from '@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final.js';
+import { Quiz } from './AfterQuizStart/Quiz/Quiz';
+import { RoundEnd } from './AfterQuizStart/RoundEnd/roundEnd';
+import { GameEnd } from './AfterQuizStart/GameEnd/gameEnd';
+import { StartScreen } from './BeforeQuizStart/StartScreen/startScreen';
+import { JoinScreen } from './BeforeQuizStart/JoinScreen/joinScreen';
+import { Loader } from './BeforeQuizStart/Loader/loader';
 import './index.css';
-import { Quiz } from './Quiz/Quiz.js';
-import { StartScreen } from './Start/startScreen';
-import { JoinScreen } from './Start/joinScreen';
-import { Score } from './Quiz/score';
-import { GameEnd } from './Quiz/gameEnd';
-import { Loader } from './Start/loader';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Container, Row, Col } from 'reactstrap';
-//import FontAwesome from 'react-fontawesome';
 
 
 class Game extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -25,7 +21,7 @@ class Game extends React.Component {
             players: [],
             roomCode: '',
             showLoader: true,
-            loaderText: "Connecting to server"
+            loaderText: "Connecting to the server"
         };
     }
 
@@ -37,7 +33,7 @@ class Game extends React.Component {
             backendHost = 'http://localhost:50083/quiz';
         }
         else {
-            backendHost = 'https://lovequiz.azurewebsites.net/quiz';
+            backendHost = 'https://quizoflove.azurewebsites.net/quiz';
         }
 
         const hubConnection = new HubConnection(backendHost);
@@ -49,7 +45,6 @@ class Game extends React.Component {
                 .catch(err => this.connectionFailed());
 
             this.state.hubConnection.on('sendQuestion', (question) => {
-                //console.log(question);
                 this.renderQuestion(question);
             });
             this.state.hubConnection.on('showStartScreen', (isCreator, roomCode, players) => {
@@ -60,10 +55,10 @@ class Game extends React.Component {
                 this.renderStartScreen(isCreator);
             });
             this.state.hubConnection.on("connectionFail", () => {
-                alert("The room don't excist or is full");
+                alert("The room doesn't excist or is full");
             });
             this.state.hubConnection.on('showAnswers', (players) => {
-                this.renderScoreBoard(players);
+                this.renderCurrentScore(players);
             });
             this.state.hubConnection.on('gameDraw', (players, drawers) => {
                 var endMessage = "And the winner is... there is no winner. It's a draw between";
@@ -83,11 +78,26 @@ class Game extends React.Component {
         });
     }
 
+    encodeQueryData(data) {
+        let ret = [];
+        for (let d in data)
+            ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+        return ret.join('&');
+    }
+
     connected() {
         console.log("connected");
         this.setState({
             showLoader: false
         });
+
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('roomcode')) {
+            const code = urlParams.get('roomcode');
+            this.setState({
+                roomCode: code
+            });
+        }
     }
 
     connectionFailed() {
@@ -99,12 +109,6 @@ class Game extends React.Component {
 
     addPlayer() {
         this.state.hubConnection.invoke('addPlayer', this.state.name);
-    }
-
-    resetAll() {
-        this.state.hubConnection.invoke('resetGame')
-            .then(() => alert("reseted"))
-            .catch(() => alert("reset failed"));
     }
 
     renderGameEnd(players, endMessage) {
@@ -128,10 +132,10 @@ class Game extends React.Component {
             , document.getElementById('root'));
     }
 
-    renderScoreBoard(players) {
+    renderCurrentScore(players) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Score
+                <RoundEnd
                     players={players}
                     roomCode={this.state.roomCode}
                     hubConnection={this.state.hubConnection}
@@ -164,6 +168,21 @@ class Game extends React.Component {
         });
     }
 
+    onFacebookLogin = (loginStatus, resultObject) => {
+        console.log(resultObject);
+        // Remove whitespaces
+        //var name = resultObject.user.name.replace(/ /g, '');
+        var name = resultObject.user.name.split(" ");
+        if (loginStatus === true) {
+            this.setState({
+                name: name[0]
+            });
+        } else {
+            alert('Facebook login error');
+        }
+    }
+
+
     render() {
         return (
             <div>
@@ -175,6 +194,7 @@ class Game extends React.Component {
                         hubConnection={this.state.hubConnection}
                         name={this.state.name}
                         roomCode={this.state.roomCode}
+                        onLogin={this.onFacebookLogin}
                     />
                 </div>
             </div>

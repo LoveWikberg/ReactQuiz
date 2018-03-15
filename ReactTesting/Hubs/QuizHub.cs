@@ -2,8 +2,10 @@
 using ReactTesting.Data;
 using ReactTesting.Data.Models;
 using ReactTesting.ExtensionMethods;
+using ReactTesting.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -121,20 +123,19 @@ namespace ReactTesting.Hubs
 
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
-                System.Threading.Thread.Sleep(2000);
+                DelayGame(2000, gameRoom);
                 AllPlayersHaveAnswered(gameRoom);
-
-                //await Task.Delay(2000);
-                //gameRoom.Timer.Interval = 2000;
-                //gameRoom.Timer.Start();
-                //gameRoom.Timer.Elapsed += delegate { AllPlayersHaveAnswered(gameRoom); };
-
             }
         }
 
+        void DelayGame(int milliSeconds, GameRoom gameRoom)
+        {
+            gameRoom.Timer = Stopwatch.StartNew();
+            while (gameRoom.Timer.ElapsedMilliseconds <= milliSeconds) ;
+            gameRoom.Timer.Stop();
+        }
         async void AllPlayersHaveAnswered(GameRoom gameRoom)
         {
-            //gameRoom.Timer.Stop();
             gameRoom.RoundCount += 1;
             SetPoints(gameRoom);
             if (gameRoom.RoundCount >= 3)
@@ -195,7 +196,7 @@ namespace ReactTesting.Hubs
         {
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
-            System.Threading.Thread.Sleep(10000);
+            DelayGame(7000, gameRoom);
             await SendQuestion(gameRoom.GroupName);
         }
 
@@ -209,7 +210,7 @@ namespace ReactTesting.Hubs
         {
             foreach (var player in gameRoom.Players)
             {
-                if (player.Answer == gameRoom.CurrentQuestion.Correct_answer)
+                if (player.Answer == gameRoom.CurrentQuestion.CorrectAnswer)
                 {
                     player.Points += 1;
                 }
@@ -244,14 +245,14 @@ namespace ReactTesting.Hubs
             Random random = new Random();
             int index = random.Next(0, questions.Count - 1);
 
-            var alternatives = questions[index].Incorrect_answers
-                .Append(questions[index].Correct_answer).ToList();
+            var alternatives = questions[index].IncorrectAnswers
+                .Append(questions[index].CorrectAnswer).ToList();
             alternatives.Shuffle();
 
             Quiz question = new Quiz
             {
                 Category = questions[index].Category,
-                Correct_answer = questions[index].Correct_answer,
+                CorrectAnswer = questions[index].CorrectAnswer,
                 Difficulty = questions[index].Difficulty,
                 Question = questions[index].Question,
                 Type = questions[index].Type,

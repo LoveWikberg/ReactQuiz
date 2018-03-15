@@ -2,4 +2,7 @@ D:\Programmering\ReactTesting\ReactTesting
 --output-path=obj\Any CPU\Release\netcoreapp2.0\
 --application-name=ReactTesting
 --content-root=D:\Programmering\ReactTesting\ReactTesting
---file=
+--file=D:\Programmering\ReactTesting\ReactTesting\Views\QuizCreater\Index.cshtml
+--file=D:\Programmering\ReactTesting\ReactTesting\Views\Shared\_Layout.cshtml
+--file=D:\Programmering\ReactTesting\ReactTesting\Views\_ViewImports.cshtml
+--file=D:\Programmering\ReactTesting\ReactTesting\Views\_ViewStart.cshtml

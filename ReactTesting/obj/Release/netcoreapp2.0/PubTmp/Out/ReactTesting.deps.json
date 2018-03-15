@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "15577cea35fd952584e903b38118a6fa3ac864ae"
+    "signature": "98745434104756653c99982a397e6356f9aa4a6e"
   },
   "compilationOptions": {
     "defines": [
@@ -23,6 +23,7 @@
     ".NETCoreApp,Version=v2.0": {
       "ReactTesting/1.0.0": {
         "dependencies": {
+          "FireSharp": "2.0.4",
           "Microsoft.AspNetCore.All": "2.0.5",
           "Microsoft.AspNetCore.SignalR": "1.0.0-alpha2-final",
           "Microsoft.NETCore.App": "2.0.0"
@@ -32,6 +33,19 @@
         },
         "compile": {
           "ReactTesting.dll": {}
+        }
+      },
+      "FireSharp/2.0.4": {
+        "dependencies": {
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Net.Http": "2.2.28",
+          "Newtonsoft.Json": "10.0.1"
+        },
+        "runtime": {
+          "lib/portable-net45+sl5+wp8+win8/FireSharp.dll": {}
+        },
+        "compile": {
+          "lib/portable-net45+sl5+wp8+win8/FireSharp.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -1484,6 +1498,27 @@
           "lib/netstandard1.4/Microsoft.Azure.KeyVault.WebKey.dll": {}
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9"
+        },
+        "runtime": {
+          "lib/net40/Microsoft.Threading.Tasks.Extensions.Desktop.dll": {},
+          "lib/net40/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/net40/Microsoft.Threading.Tasks.dll": {}
+        },
+        "compile": {
+          "lib/net40/Microsoft.Threading.Tasks.Extensions.Desktop.dll": {},
+          "lib/net40/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/net40/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CodeAnalysis.Analyzers/1.1.0": {},
       "Microsoft.CodeAnalysis.Common/2.3.1": {
         "dependencies": {
@@ -2337,6 +2372,20 @@
         },
         "compile": {
           "lib/netstandard1.4/Microsoft.IdentityModel.Tokens.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.28": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "runtime": {
+          "lib/net45/System.Net.Http.Extensions.dll": {},
+          "lib/net45/System.Net.Http.Primitives.dll": {}
+        },
+        "compile": {
+          "lib/net45/System.Net.Http.Extensions.dll": {},
+          "lib/net45/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.Net.Http.Headers/2.0.1": {
@@ -4192,6 +4241,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "FireSharp/2.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-laSHpVUBG6iCTUixmpeUmYxie2zbziOBM+LU0v2A0ETE9dUyBA+8aY63xql/o8LXj+kFybBLYUKBUrLCZWaq+A==",
+      "path": "firesharp/2.0.4",
+      "hashPath": "firesharp.2.0.4.nupkg.sha512"
+    },
     "Libuv/1.10.0": {
       "type": "package",
       "serviceable": true,
@@ -4951,6 +5007,27 @@
       "hashPath": "microsoft.azure.keyvault.webkey.2.0.7.nupkg.sha512",
       "runtimeStoreManifestName": "aspnetcore-store-2.0.0-linux-x64.xml;aspnetcore-store-2.0.0-osx-x64.xml;aspnetcore-store-2.0.0-win7-x64.xml;aspnetcore-store-2.0.0-win7-x86.xml"
     },
+    "Microsoft.Bcl/1.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-USQ55innJy8K+tAXvVa1O8dUTp2s7pmJ5cJj6Tl02HtGc2xBDj0P2QH5620HbGXIWKWYhydoeQF8Rm/JRDBGhw==",
+      "path": "microsoft.bcl/1.1.9",
+      "hashPath": "microsoft.bcl.1.1.9.nupkg.sha512"
+    },
+    "Microsoft.Bcl.Async/1.0.168": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tUNC02eBwDKpGre0BcNIvblLv1q0Q3DnS/vtkRHj2FE1sXwt386HAudztyl5C0U88hllrqHDvtlz8bK0Y8cHDA==",
+      "path": "microsoft.bcl.async/1.0.168",
+      "hashPath": "microsoft.bcl.async.1.0.168.nupkg.sha512"
+    },
+    "Microsoft.Bcl.Build/1.0.14": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA==",
+      "path": "microsoft.bcl.build/1.0.14",
+      "hashPath": "microsoft.bcl.build.1.0.14.nupkg.sha512"
+    },
     "Microsoft.CodeAnalysis.Analyzers/1.1.0": {
       "type": "package",
       "serviceable": true,
@@ -5473,6 +5550,13 @@
       "path": "microsoft.identitymodel.tokens/5.1.4",
       "hashPath": "microsoft.identitymodel.tokens.5.1.4.nupkg.sha512",
       "runtimeStoreManifestName": "aspnetcore-store-2.0.0-linux-x64.xml;aspnetcore-store-2.0.0-osx-x64.xml;aspnetcore-store-2.0.0-win7-x64.xml;aspnetcore-store-2.0.0-win7-x86.xml"
+    },
+    "Microsoft.Net.Http/2.2.28": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hPL9k+rPIpAj84RZSq3WtJkOD9uMStBovAIAz/0OQ+9hQIwQ2XqQlAhMqI4kw0XDxweJySIqNTMlkhRRuthcPQ==",
+      "path": "microsoft.net.http/2.2.28",
+      "hashPath": "microsoft.net.http.2.2.28.nupkg.sha512"
     },
     "Microsoft.Net.Http.Headers/2.0.1": {
       "type": "package",

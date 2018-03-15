@@ -1,0 +1,28 @@
+﻿table {
+    margin-top: 10%;
+    background-color: #05555F;
+    color: white;
+    width: 100%;
+    border-radius: 10px;
+}
+
+th, td {
+    padding: 5%;
+}
+
+tr:not(#head) {
+    border-top: 1px solid #CCDFCB;
+}
+
+
+.gold {
+    color: rgba(255,215,0, 0.9);
+}
+
+.silver {
+    color: rgba(192,192,192,0.9 );
+}
+
+.bronze {
+    color: rgba(205,127,50, 0.9);
+}
