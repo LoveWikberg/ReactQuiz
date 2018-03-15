@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -53,9 +54,26 @@ namespace ReactTesting.Controllers
             };
             IFirebaseClient client = new FirebaseClient(config);
             FirebaseResponse response = await client.GetAsync("-L6fpiYwQL4FHiKhiup3/quiz");
-            //var m = response.ResultAs<List<Quiz>>();
-            var m = JsonConvert.DeserializeObject(response.Body);
-            return Ok(m);
+            dynamic json = JsonConvert.DeserializeObject(response.Body);
+
+            List<FireBaseResult> fbResult = new List<FireBaseResult>();
+            foreach (var parent in json)
+            {
+                foreach (var child in parent)
+                {
+                    {
+                        object quiz = child.Quiz;
+                        var deserializedQuiz = JsonConvert.DeserializeObject<List<Quiz>>(quiz.ToString());
+                        FireBaseResult result = new FireBaseResult
+                        {
+                            Name = child.Name,
+                            Quiz = deserializedQuiz
+                        };
+                        fbResult.Add(result);
+                    }
+                }
+            }
+            return Ok(fbResult);
         }
 
         [HttpGet, Route("firebasepush")]
@@ -68,20 +86,25 @@ namespace ReactTesting.Controllers
             IFirebaseClient client = new FirebaseClient(config);
             var quiz = new Quiz
             {
-                Question = "Ska man åka till fribeeraa?",
-                IncorrectAnswers = new List<string> { "bröd", "smark", "krup" },
+                Question = "Ska man åka till Köpenhamn?",
+                IncorrectAnswers = new List<string> { "bröd", "krut", "krup" },
                 Category = "Hammarby IF",
                 CorrectAnswer = "Nej fan",
                 Difficulty = "hard",
                 Type = "Ulvik"
             };
 
-            Quiz[] quizen = new Quiz[3];
-            for (int i = 0; i < quizen.Length; i++)
+            List<Quiz> quizen = new List<Quiz>();
+            for (int i = 0; i < 3; i++)
             {
-                quizen[i] = quiz;
+                quizen.Add(quiz);
             }
-            PushResponse response = await client.PushAsync("-L6fpiYwQL4FHiKhiup3/quiz", quizen);
+            FireBaseResult fbResult = new FireBaseResult
+            {
+                Quiz = quizen,
+                Name = "systeer"
+            };
+            PushResponse response = await client.PushAsync("-L6fpiYwQL4FHiKhiup3/quiz", fbResult);
 
             return Ok(response.Body);
         }

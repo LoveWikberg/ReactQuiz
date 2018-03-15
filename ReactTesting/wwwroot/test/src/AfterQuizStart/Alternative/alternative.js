@@ -32,7 +32,7 @@ export class Alternative extends React.Component {
             });
         }
         this.props.disablebuttons();
-        this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", this.props.alt, this.props.roomCode);
+        this.props.hubConnection.invoke("collectAnswer", this.props.alt, this.props.roomCode);
     }
 
     render() {
