@@ -23,12 +23,12 @@ namespace ReactTesting.Controllers
     public class QuizController : Controller
     {
         private readonly DataManager dataManager;
-        private readonly FireBaseManager<Quiz> fireBaseManager;
+        private readonly FirebaseQuizManager firebaseQuizManager;
 
-        public QuizController(DataManager dataManager, FireBaseManager<Quiz> fireBaseManager)
+        public QuizController(DataManager dataManager, FirebaseQuizManager firebaseQuizManager)
         {
             this.dataManager = dataManager;
-            this.fireBaseManager = fireBaseManager;
+            this.firebaseQuizManager = firebaseQuizManager;
         }
 
         [HttpGet, Route("questions")]
@@ -38,75 +38,66 @@ namespace ReactTesting.Controllers
             return Ok(questions);
         }
 
-        [HttpGet, Route("firebaseQuestions")]
-        async public Task<IActionResult> GetFirebaseQuestions()
+        [HttpGet, Route("firebasequiz")]
+        async public Task<IActionResult> GetFirebaseQuiz(string quizName)
         {
-            var questions = await fireBaseManager.GetQuestions("https://lovequiz-1eebe.firebaseio.com/", "-L6fpiYwQL4FHiKhiup3/quiz");
-            return Ok(questions);
-        }
-
-        [HttpGet, Route("firebase")]
-        async public Task<IActionResult> FireBasetest()
-        {
-            IFirebaseConfig config = new FirebaseConfig
-            {
-                BasePath = "https://lovequiz-1eebe.firebaseio.com/"
-            };
-            IFirebaseClient client = new FirebaseClient(config);
-            FirebaseResponse response = await client.GetAsync("-L6fpiYwQL4FHiKhiup3/quiz");
-            dynamic json = JsonConvert.DeserializeObject(response.Body);
-
-            List<FireBaseResult> fbResult = new List<FireBaseResult>();
-            foreach (var parent in json)
-            {
-                foreach (var child in parent)
-                {
-                    {
-                        object quiz = child.Quiz;
-                        var deserializedQuiz = JsonConvert.DeserializeObject<List<Quiz>>(quiz.ToString());
-                        FireBaseResult result = new FireBaseResult
-                        {
-                            Name = child.Name,
-                            Quiz = deserializedQuiz
-                        };
-                        fbResult.Add(result);
-                    }
-                }
-            }
+            var fbResult = await firebaseQuizManager.GetQuiz("Hammarby");
             return Ok(fbResult);
+            //FireBaseResult fbResult = new FireBaseResult();
+
+            //foreach (var parent in json)
+            //{
+            //    if (parent.Name == "Hammarby")
+            //    {
+            //        foreach (var child in parent)
+            //        {
+            //            object quiz = child.Quiz;
+            //            var deserializedQuiz = JsonConvert.DeserializeObject<List<Quiz>>(quiz.ToString());
+            //            fbResult = new FireBaseResult
+            //            {
+            //                QuizName = parent.Name,
+            //                Quiz = deserializedQuiz
+            //            };
+            //        }
+            //    }
+            //}
+            //fbResult.ChildName = "Byxa";
+            //FirebaseResponse re = await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.ParentName}", fbResult);
+
+
         }
 
         [HttpGet, Route("firebasepush")]
-        async public Task<IActionResult> FireBasePush()
+        async public Task<IActionResult> FireBasePush(FireBaseResult fbResult)
         {
-            IFirebaseConfig config = new FirebaseConfig
-            {
-                BasePath = "https://lovequiz-1eebe.firebaseio.com/",
-            };
-            IFirebaseClient client = new FirebaseClient(config);
-            var quiz = new Quiz
-            {
-                Question = "Ska man åka till Köpenhamn?",
-                IncorrectAnswers = new List<string> { "bröd", "krut", "krup" },
-                Category = "Hammarby IF",
-                CorrectAnswer = "Nej fan",
-                Difficulty = "hard",
-                Type = "Ulvik"
-            };
+            firebaseQuizManager.UpdateQuiz(fbResult);
+            return Ok();
+            //IFirebaseConfig config = new FirebaseConfig
+            //{
+            //    BasePath = "https://lovequiz-1eebe.firebaseio.com/",
+            //};
+            //IFirebaseClient client = new FirebaseClient(config);
+            //var quiz = new Quiz
+            //{
+            //    Question = "Fisk eller spö??",
+            //    IncorrectAnswers = new List<string> { "kruka", "krut", "braj" },
+            //    Category = "Hammarby IF",
+            //    CorrectAnswer = "Nej fan",
+            //    Difficulty = "hard",
+            //    Type = "Svårt som fan"
+            //};
 
-            List<Quiz> quizen = new List<Quiz>();
-            for (int i = 0; i < 3; i++)
-            {
-                quizen.Add(quiz);
-            }
-            FireBaseResult fbResult = new FireBaseResult
-            {
-                Quiz = quizen,
-                Name = "systeer"
-            };
-            PushResponse response = await client.PushAsync("-L6fpiYwQL4FHiKhiup3/quiz", fbResult);
-
-            return Ok(response.Body);
+            //List<Quiz> quizen = new List<Quiz>();
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    quizen.Add(quiz);
+            //}
+            //FireBaseResult fbResult = new FireBaseResult
+            //{
+            //    QuizName = "Villebråd",
+            //    Quiz = quizen
+            //};
+            //FirebaseResponse response = await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.QuizName}", fbResult);
         }
 
     }

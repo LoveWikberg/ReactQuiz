@@ -10,24 +10,47 @@ using System.Threading.Tasks;
 
 namespace ReactTesting.Models.Data
 {
-    public class FireBaseManager<T>
+    public class FirebaseQuizManager
     {
-        //string basePath;
-        //public FireBaseManager(string basePath)
-        //{
-        //    this.basePath = basePath;
-        //}
-        async public Task<List<T>> GetQuestions(string basePath, string childpath)
-        {
-            IFirebaseConfig config = new FirebaseConfig
-            {
-                BasePath = basePath
-            };
-            IFirebaseClient client = new FirebaseClient(config);
-            FirebaseResponse response = await client.GetAsync(childpath);
+        IFirebaseConfig config;
+        IFirebaseClient client;
 
-            var m = JsonConvert.DeserializeObject<List<T>>(response.Body);
-            return m;
+        public FirebaseQuizManager()
+        {
+            config = new FirebaseConfig
+            {
+                BasePath = "https://lovequiz-1eebe.firebaseio.com/",
+            };
+            client = new FirebaseClient(config);
+        }
+
+        /// <summary>
+        /// Updates the the selected object. If the object does not exist
+        /// a new object will be created.
+        /// </summary>
+        async public void UpdateQuiz(FireBaseResult fbResult)
+        {
+            await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.QuizName}", fbResult);
+        }
+
+        async public Task<FireBaseResult> GetQuiz(string quizName)
+        {
+            FirebaseResponse response = await client.GetAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{quizName}");
+            FireBaseResult fbResult = JsonConvert.DeserializeObject<FireBaseResult>(response.Body);
+            fbResult.QuizName = quizName;
+            return fbResult;
+        }
+
+        async public Task<List<string>> GetAllQuizNames()
+        {
+            FirebaseResponse response = await client.GetAsync("-L6fpiYwQL4FHiKhiup3/quiz");
+            dynamic json = JsonConvert.DeserializeObject(response.Body);
+            List<string> quizNames = new List<string>();
+            foreach (var item in json)
+            {
+                quizNames.Add(item.Name);
+            }
+            return quizNames;
         }
     }
 }
