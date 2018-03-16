@@ -109,7 +109,6 @@ namespace ReactTesting.Hubs
         {
             var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
             room.Questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
-            //questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
             await SendQuestion(roomCode);
         }
 

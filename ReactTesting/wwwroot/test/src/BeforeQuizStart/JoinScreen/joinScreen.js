@@ -1,7 +1,6 @@
 ﻿import React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { FacebookLogin } from '../../Facebook/facebookLogin';
-import FontAwesome from 'react-fontawesome';
 import '../../index.css';
 import './joinScreen.css';
 

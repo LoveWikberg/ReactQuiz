@@ -77,6 +77,9 @@ export class StartScreen extends React.Component {
         return (
             <div>
                 <h1 className="startTitle" >Room {this.props.roomCode}</h1>
+
+                {this.checkIfCreator()}
+
                 <FacebookShareButton
                     className="facebookShare"
                     url={this.state.inviteUrl}
@@ -87,9 +90,6 @@ export class StartScreen extends React.Component {
                     />
                     &nbsp; Invite friend
                     </FacebookShareButton>
-
-                {this.checkIfCreator()}
-
                 <div className="playerContainer">
                     {
                         this.state.players.map((player, key) => {

@@ -41,8 +41,11 @@ namespace ReactTesting.Controllers
         [HttpGet, Route("firebasequiz")]
         async public Task<IActionResult> GetFirebaseQuiz(string quizName)
         {
+
             var fbResult = await firebaseQuizManager.GetQuiz("Hammarby");
             return Ok(fbResult);
+
+            #region old
             //FireBaseResult fbResult = new FireBaseResult();
 
             //foreach (var parent in json)
@@ -63,15 +66,17 @@ namespace ReactTesting.Controllers
             //}
             //fbResult.ChildName = "Byxa";
             //FirebaseResponse re = await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.ParentName}", fbResult);
-
+            #endregion
 
         }
 
-        [HttpGet, Route("firebasepush")]
-        async public Task<IActionResult> FireBasePush(FireBaseResult fbResult)
+        [HttpPost, Route("createOrUpdateQuiz")]
+        async public Task<IActionResult> CreateOrUpdateQuiz(FireBaseResult fbResult)
         {
-            firebaseQuizManager.UpdateQuiz(fbResult);
+            await firebaseQuizManager.UpdateQuiz(fbResult);
             return Ok();
+
+            #region old
             //IFirebaseConfig config = new FirebaseConfig
             //{
             //    BasePath = "https://lovequiz-1eebe.firebaseio.com/",
@@ -98,6 +103,14 @@ namespace ReactTesting.Controllers
             //    Quiz = quizen
             //};
             //FirebaseResponse response = await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.QuizName}", fbResult);
+            #endregion
+        }
+
+        [HttpGet, Route("quiznames")]
+        async public Task<IActionResult> GetQuizNames()
+        {
+            var quiznames = await firebaseQuizManager.GetAllQuizNames();
+            return Ok(quiznames);
         }
 
     }

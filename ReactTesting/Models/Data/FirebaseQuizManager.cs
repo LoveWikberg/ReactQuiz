@@ -28,7 +28,7 @@ namespace ReactTesting.Models.Data
         /// Updates the the selected object. If the object does not exist
         /// a new object will be created.
         /// </summary>
-        async public void UpdateQuiz(FireBaseResult fbResult)
+        async public Task UpdateQuiz(FireBaseResult fbResult)
         {
             await client.UpdateAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{fbResult.QuizName}", fbResult);
         }
@@ -36,6 +36,8 @@ namespace ReactTesting.Models.Data
         async public Task<FireBaseResult> GetQuiz(string quizName)
         {
             FirebaseResponse response = await client.GetAsync($"-L6fpiYwQL4FHiKhiup3/quiz/{quizName}");
+            if (response.Body == null)
+                return null;
             FireBaseResult fbResult = JsonConvert.DeserializeObject<FireBaseResult>(response.Body);
             fbResult.QuizName = quizName;
             return fbResult;
