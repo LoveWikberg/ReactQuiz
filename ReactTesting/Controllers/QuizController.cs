@@ -43,7 +43,7 @@ namespace ReactTesting.Controllers
         {
 
             var fbResult = await firebaseQuizManager.GetQuiz("Hammarby");
-            return Ok(fbResult);
+            return Ok(fbResult.Quiz);
 
             #region old
             //FireBaseResult fbResult = new FireBaseResult();

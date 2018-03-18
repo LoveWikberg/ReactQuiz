@@ -30,7 +30,7 @@ namespace ReactTesting.Controllers
             if (!ModelState.IsValid)
                 return View(viewModel);
 
-            FireBaseResult fbResult = await firebaseQuizManager.GetQuiz(viewModel.QuizName);
+            FireBaseResult fbResult =  await firebaseQuizManager.GetQuiz(viewModel.QuizName);
             if (fbResult == null)
             {
                 List<Quiz> quiz = new List<Quiz>

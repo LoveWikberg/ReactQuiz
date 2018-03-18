@@ -44,6 +44,7 @@ export class StartScreen extends React.Component {
                     <Host
                         hubConnection={this.props.hubConnection}
                         roomCode={this.props.roomCode}
+                        hostname={this.props.hostname}
                     />
                 </div>
             );

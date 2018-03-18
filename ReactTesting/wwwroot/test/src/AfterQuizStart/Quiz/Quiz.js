@@ -57,7 +57,7 @@ export class Quiz extends React.Component {
                 });
 
                 this.disableButtonsAndResetTimer();
-                this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", " ", this.props.roomCode);
+                this.props.hubConnection.invoke("collectAnswer", " ", this.props.roomCode);
             }
         }, 150);
         this.setState({

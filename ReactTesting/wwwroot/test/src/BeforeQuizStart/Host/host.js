@@ -21,7 +21,14 @@ export class Host extends React.Component {
     }
 
     getQuiznames() {
-        axios.get('http://localhost:50083/api/quiz/quiznames')
+        let apiUrl = "";
+        if (this.props.hostname === 'localhost') {
+            apiUrl = 'http://localhost:50083/api/quiz/quiznames';
+        }
+        else {
+            apiUrl = 'https://quizoflove.azurewebsites.net/api/quiz/quiznames';
+        }
+        axios.get(apiUrl)
             .then((response) => {
                 this.setState({
                     quiznames: response.data
@@ -45,7 +52,11 @@ export class Host extends React.Component {
     }
 
     startGame() {
-        this.props.hubConnection.invoke('startGame', this.state.numberOfQuestions, this.props.roomCode);
+        this.props.hubConnection
+            .invoke('startGame', this.state.numberOfQuestions, this.props.roomCode, this.state.selectedQuiz)
+            .catch(() => {
+                alert("An error occured when you tried to start the game. Please try again or reload the page and create a new room.");
+            });
     }
 
     render() {
@@ -57,7 +68,8 @@ export class Host extends React.Component {
                     onChange={(e) => this.setNumberOfQuestions(e.target.value)}
                 />
                 <select className="customSelect" onChange={(e) => this.setSelectedQuiz(e)}>
-                    <option value="volvo" disabled selected>Select a quiz</option>
+                    <option disabled selected>Select a quiz</option>
+                    <option value="standard" >Standard quiz</option>
                     {
                         this.state.quiznames.map((name, key) => {
                             return (

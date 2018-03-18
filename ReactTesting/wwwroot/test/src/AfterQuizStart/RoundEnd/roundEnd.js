@@ -42,7 +42,7 @@ export class RoundEnd extends React.Component {
         return (
             <div>
                 <h1>Current score</h1>
-                <p>The next round starts in {this.state.timer}</p>
+                <h4>The next round starts in {this.state.timer}</h4>
                 <Score players={this.props.players} />
             </div>
         );

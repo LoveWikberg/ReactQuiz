@@ -40,6 +40,7 @@ namespace ReactTesting.Models.Data
                 return null;
             FireBaseResult fbResult = JsonConvert.DeserializeObject<FireBaseResult>(response.Body);
             fbResult.QuizName = quizName;
+            fbResult.Quiz.RemoveAll(q => q == null);
             return fbResult;
         }
 
