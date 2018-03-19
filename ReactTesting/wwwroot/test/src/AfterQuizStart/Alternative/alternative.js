@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Button } from 'reactstrap';
-import '../../index.css'
+import '../../index.css';
 import './alternative.css';
 
 export class Alternative extends React.Component {

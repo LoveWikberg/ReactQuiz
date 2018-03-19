@@ -126,6 +126,7 @@ namespace ReactTesting.Hubs
         {
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
+                Clients.All.InvokeAsync("nextQuestion");
                 for (int i = 0; i < gameRoom.Players.Count; i++)
                 {
                     gameRoom.Players[i].HasAnswered = false;
@@ -208,7 +209,37 @@ namespace ReactTesting.Hubs
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
             DelayGame(7000, gameRoom);
-            await SendQuestion(gameRoom.GroupName);
+            //if (gameRoom.RoundCount % 2 == 0)
+            await StartMiniGame(gameRoom);
+            //else
+            //await SendQuestion(gameRoom.GroupName);
+        }
+
+        async Task StartMiniGame(GameRoom gameRoom)
+        {
+            Random random = new Random();
+            int randomresult = random.Next(0, 0);
+            switch (randomresult)
+            {
+                case 0:
+                    await Clients.Group(gameRoom.GroupName).InvokeAsync("mathQuizInstructions");
+                    DelayGame(3000, gameRoom);
+                    await Clients.Group(gameRoom.GroupName).InvokeAsync("startMathQuiz"
+                        , GenerateMathQuiz(), gameRoom.Players);
+                    break;
+            }
+        }
+
+        async public Task CollectMathAnswer(string roomCode)
+        {
+            string connId = Context.ConnectionId;
+            var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
+            var player = gameRoom.Players.SingleOrDefault(p => p.ConnectionId == connId);
+            player.MathQuizScore++;
+            if (player.MathQuizScore >= 15)
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("testwin");
+            else
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("updatePlayerProgres", gameRoom.Players);
         }
 
         void SetPoints(GameRoom gameRoom)
@@ -263,6 +294,63 @@ namespace ReactTesting.Hubs
             gameRoom.Timer = Stopwatch.StartNew();
             while (gameRoom.Timer.ElapsedMilliseconds <= milliSeconds) ;
             gameRoom.Timer.Stop();
+        }
+
+        public List<Quiz> GenerateMathQuiz()
+        {
+            List<Quiz> mathquiz = new List<Quiz>();
+            Random random = new Random();
+            char[] operators = new char[] { '+', '-' };
+            for (int i = 0; i < 50; i++)
+            {
+                int intOne = random.Next(-10, 10);
+                int intTwo = random.Next(-10, 10);
+                int index = random.Next(0, 1);
+                char mathOperator = operators[index];
+                string answer = Calculate(intOne, intTwo, mathOperator).ToString();
+                List<string> alternatives = GenerateAlternatives(3, int.Parse(answer));
+                alternatives.Add(answer);
+                alternatives.Shuffle();
+                string question = $"{intOne} {mathOperator} {intTwo} = ?";
+                Quiz quiz = new Quiz
+                {
+                    Question = question,
+                    CorrectAnswer = answer,
+                    Alternatives = alternatives
+                };
+                mathquiz.Add(quiz);
+            }
+            return mathquiz;
+        }
+
+        List<string> GenerateAlternatives(int length, int excludedAlternative)
+        {
+            Random random = new Random();
+            List<string> alternatives = new List<string>();
+            for (int i = 0; i < length; i++)
+            {
+                int randomAlternative;
+                do
+                {
+                    randomAlternative = random.Next(-20, 20);
+
+                }
+                while (randomAlternative == excludedAlternative);
+                alternatives.Add(randomAlternative.ToString());
+            }
+            return alternatives;
+        }
+
+        int Calculate(int numberOne, int numberTwo, char mathOperator)
+        {
+            switch (mathOperator)
+            {
+                case '+':
+                    return numberOne + numberTwo;
+                case '-':
+                    return numberTwo - numberTwo;
+            }
+            throw new Exception("Invalid operator");
         }
     }
 }

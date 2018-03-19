@@ -7,6 +7,8 @@ import { GameEnd } from './AfterQuizStart/GameEnd/gameEnd';
 import { StartScreen } from './BeforeQuizStart/StartScreen/startScreen';
 import { JoinScreen } from './BeforeQuizStart/JoinScreen/joinScreen';
 import { Loader } from './BeforeQuizStart/Loader/loader';
+import { MathInstructions } from './AfterQuizStart/MathMiniGame/mathInstructions';
+import { MathQuiz } from './AfterQuizStart/MathMiniGame/mathQuiz';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -76,8 +78,8 @@ class Game extends React.Component {
             this.state.hubConnection.on('gameWon', (players, winner) => {
                 this.renderGameEnd(players, "And the winner is... " + winner);
             });
-            this.state.hubConnection.on('disalert', () => {
-                alert("disconnected");
+            this.state.hubConnection.on('mathQuizInstructions', () => {
+                this.renderMathQuizInstructions();
             });
         });
     }
@@ -154,6 +156,17 @@ class Game extends React.Component {
             <div className="tealGameContainer">
                 <Quiz
                     question={question}
+                    hubConnection={this.state.hubConnection}
+                    roomCode={this.state.roomCode}
+                />
+            </div>
+            , document.getElementById('root'));
+    }
+
+    renderMathQuizInstructions = () => {
+        ReactDOM.hydrate(
+            <div className="tealGameContainer">
+                <MathInstructions
                     hubConnection={this.state.hubConnection}
                     roomCode={this.state.roomCode}
                 />

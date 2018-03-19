@@ -6,6 +6,12 @@ import './joinScreen.css';
 
 export class JoinScreen extends React.Component {
 
+    // TODO
+    // Prevent player from checking console
+    //componentDidMount = () => {
+    //    document.addEventListener("keydown", () => alert("hej"));
+    //}
+
     joinRoom() {
         if (this.props.name.length > 12)
             alert("Too long name - max 12 characters");

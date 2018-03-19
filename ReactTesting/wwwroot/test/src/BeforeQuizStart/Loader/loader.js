@@ -13,10 +13,10 @@ export class Loader extends React.Component {
                         size="5x"
                         spin
                     />
-                    <h2>{this.props.text}</h2>
                 </div>
             </div>
         );
     }
+    //<h2>{this.props.text}</h2>
 
 }

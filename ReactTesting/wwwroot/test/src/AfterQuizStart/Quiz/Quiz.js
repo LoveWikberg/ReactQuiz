@@ -33,6 +33,13 @@ export class Quiz extends React.Component {
         this.moveProgressBar();
     }
 
+    componentDidMount = () => {
+        this.props.hubConnection.on("nextQuestion", () => {
+            this.setState({
+                mainText: "Next question is comming up!"
+            });
+        });
+    }
 
     disableButtonsAndResetTimer = () => {
         clearInterval(this.state.interval);

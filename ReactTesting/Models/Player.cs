@@ -12,5 +12,6 @@ namespace ReactTesting.Data
         public bool HasAnswered { get; set; }
         public int Points { get; set; }
         public string Answer { get; set; }
+        public int MathQuizScore { get; set; }
     }
 }
