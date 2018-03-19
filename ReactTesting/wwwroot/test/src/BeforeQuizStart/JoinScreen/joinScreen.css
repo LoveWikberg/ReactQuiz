@@ -6,7 +6,8 @@
     margin-bottom: 10%;
 }
 
-.btnSpacing {
+.btnDesign {
+    height: 8vh !important;
     margin-top: 5%;
     margin-bottom: 5%;
 }

@@ -57,7 +57,7 @@ export class Quiz extends React.Component {
                 });
 
                 this.disableButtonsAndResetTimer();
-                this.props.hubConnection.invoke("checkIfAllPlayersHaveAnswered", " ", this.props.roomCode);
+                this.props.hubConnection.invoke("collectAnswer", " ", this.props.roomCode);
             }
         }, 150);
         this.setState({
@@ -73,9 +73,10 @@ export class Quiz extends React.Component {
                 <Progress animated color={this.state.progressColor} value={this.state.progress} />
                 <br />
                 {
-                    this.props.question.alternatives.map((alt, index) => {
+                    this.props.question.alternatives.map((alt, key) => {
                         return (
                             <Alternative
+                                key={key}
                                 alt={alt}
                                 hubConnection={this.props.hubConnection}
                                 roomCode={this.props.roomCode}

@@ -1,4 +1,4 @@
-﻿@model Quiz
+﻿@model QuizCreateVM
 
 <br />
 <br />
@@ -7,22 +7,34 @@
 <br />
 <br />
 <form asp-action="index" asp-controller="quizcreater">
-    <label asp-for="Question"></label>
-    <input asp-for="Question" />
+    <label asp-for="QuizName"></label>
+    <input asp-for="QuizName" />
+    <span asp-validation-for="QuizName"></span>
     <hr />
-    <label asp-for="CorrectAnswer"></label>
-    <input asp-for="CorrectAnswer" />
+    <label asp-for="Quiz.Question"></label>
+    <textarea asp-for="Quiz.Question"></textarea>
+    <span asp-validation-for="Quiz.Question"></span>
     <hr />
-    <label asp-for="IncorrectAnswers"></label>
-    <br />
-    <input asp-for="IncorrectAnswers[0]" />
-    <br />
-    <input asp-for="IncorrectAnswers[1]" />
-    <br />
-    <input asp-for="IncorrectAnswers[2]" />
-    <br />
-    <input asp-for="IncorrectAnswers[3]" />
+    <label asp-for="Quiz.CorrectAnswer"></label>
+    <input asp-for="Quiz.CorrectAnswer" />
+    <span asp-validation-for="Quiz.CorrectAnswer"></span>
     <hr />
-    <label asp-for="Difficulty"></label>
-    <input asp-for="Difficulty" />
+    <label asp-for="Quiz.Category"></label>
+    <input asp-for="Quiz.Category" />
+    <span asp-validation-for="Quiz.Category"></span>
+    <hr />
+    <label asp-for="Quiz.IncorrectAnswers"></label>
+    <span asp-validation-for="Quiz.IncorrectAnswers"></span>
+    <br />
+    <input asp-for="Quiz.IncorrectAnswers[0]" />
+    <br />
+    <input asp-for="Quiz.IncorrectAnswers[1]" />
+    <br />
+    <input asp-for="Quiz.IncorrectAnswers[2]" />
+    <hr />
+    <label asp-for="Quiz.Difficulty"></label>
+    <input asp-for="Quiz.Difficulty" />
+    <span asp-validation-for="Quiz.Difficulty"></span>
+    <hr />
+    <input type="submit" />
 </form>

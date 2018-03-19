@@ -1,5 +1,6 @@
 ﻿using ReactTesting.Data;
 using ReactTesting.Data.Models;
+using ReactTesting.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,18 @@ namespace ReactTesting.ExtensionMethods
             }
             specPlayer = null;
             return null;
+        }
+
+        public static void RemoveRandomItems<T>(this List<T> list, int newLengthOfList)
+        {
+            if (newLengthOfList >= list.Count)
+                return;
+            Random random = new Random();
+            while (list.Count > newLengthOfList)
+            {
+                int index = random.Next(0, list.Count - 1);
+                list.RemoveAt(index);
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ namespace ReactTesting
                 //.WithOrigins("https://drmy-fei-b14.netlify.com");
                 //.WithOrigins("http://localhost:3000");
             }));
-            services.AddTransient<FireBaseManager<Quiz>>();
+            services.AddTransient<FirebaseQuizManager>();
             services.AddSignalR();
             services.AddMvc();
         }

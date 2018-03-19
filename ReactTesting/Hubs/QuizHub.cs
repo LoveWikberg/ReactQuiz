@@ -3,6 +3,7 @@ using ReactTesting.Data;
 using ReactTesting.Data.Models;
 using ReactTesting.ExtensionMethods;
 using ReactTesting.Models;
+using ReactTesting.Models.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,10 +16,12 @@ namespace ReactTesting.Hubs
     public class QuizHub : Hub
     {
         private readonly DataManager dataManager;
+        private readonly FirebaseQuizManager firebaseQuizManager;
 
-        public QuizHub(DataManager dataManager)
+        public QuizHub(DataManager dataManager, FirebaseQuizManager firebaseQuizManager)
         {
             this.dataManager = dataManager;
+            this.firebaseQuizManager = firebaseQuizManager;
         }
 
         //public static List<Quiz> questions = new List<Quiz>();
@@ -105,15 +108,34 @@ namespace ReactTesting.Hubs
             gameRoom.Players.Add(newPlayer);
         }
 
-        async public Task StartGame(int numberOfQuestions, string roomCode)
+        async public Task StartGame(int numberOfQuestions, string roomCode, string selectedQuiz)
         {
             var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
-            room.Questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
-            //questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
+            if (selectedQuiz == null || selectedQuiz.ToLower() == "standard")
+                room.Questions = await dataManager.GetQuestionsFromAPIAsync(numberOfQuestions);
+            else
+            {
+                var firebaseQuiz = await firebaseQuizManager.GetQuiz(selectedQuiz);
+                firebaseQuiz.Quiz.RemoveRandomItems(numberOfQuestions);
+                room.Questions = firebaseQuiz.Quiz;
+            }
             await SendQuestion(roomCode);
         }
 
-        public void CheckIfAllPlayersHaveAnswered(string answer, string roomCode)
+        void CheckIfAllPlayersHaveAnswered(GameRoom gameRoom)
+        {
+            if (gameRoom.Players.All(p => p.HasAnswered))
+            {
+                for (int i = 0; i < gameRoom.Players.Count; i++)
+                {
+                    gameRoom.Players[i].HasAnswered = false;
+                }
+                DelayGame(2000, gameRoom);
+                HandlePlayersAnswersAndContinue(gameRoom);
+            }
+        }
+
+        public void CollectAnswer(string answer, string roomCode)
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
@@ -121,20 +143,10 @@ namespace ReactTesting.Hubs
             player.HasAnswered = true;
             player.Answer = answer;
 
-            if (gameRoom.Players.All(p => p.HasAnswered))
-            {
-                DelayGame(2000, gameRoom);
-                AllPlayersHaveAnswered(gameRoom);
-            }
+            CheckIfAllPlayersHaveAnswered(gameRoom);
         }
 
-        void DelayGame(int milliSeconds, GameRoom gameRoom)
-        {
-            gameRoom.Timer = Stopwatch.StartNew();
-            while (gameRoom.Timer.ElapsedMilliseconds <= milliSeconds) ;
-            gameRoom.Timer.Stop();
-        }
-        async void AllPlayersHaveAnswered(GameRoom gameRoom)
+        async void HandlePlayersAnswersAndContinue(GameRoom gameRoom)
         {
             gameRoom.RoundCount += 1;
             SetPoints(gameRoom);
@@ -161,7 +173,6 @@ namespace ReactTesting.Hubs
                     await GameEnded(gameRoom);
                 }
             }
-            ResetPlayerAnswers(gameRoom.Players);
         }
         async Task GameEnded(GameRoom gameRoom)
         {
@@ -200,12 +211,6 @@ namespace ReactTesting.Hubs
             await SendQuestion(gameRoom.GroupName);
         }
 
-        public void ResetGame()
-        {
-            gameRooms.Clear();
-            gameRooms = new List<GameRoom>();
-        }
-
         void SetPoints(GameRoom gameRoom)
         {
             foreach (var player in gameRoom.Players)
@@ -213,16 +218,8 @@ namespace ReactTesting.Hubs
                 if (player.Answer == gameRoom.CurrentQuestion.CorrectAnswer)
                 {
                     player.Points += 1;
+                    player.Answer = "";
                 }
-            }
-        }
-
-        void ResetPlayerAnswers(List<Player> players)
-        {
-            foreach (var player in players)
-            {
-                player.HasAnswered = false;
-                player.Answer = "";
             }
         }
 
@@ -260,6 +257,12 @@ namespace ReactTesting.Hubs
             };
             questions.RemoveAt(index);
             return question;
+        }
+        void DelayGame(int milliSeconds, GameRoom gameRoom)
+        {
+            gameRoom.Timer = Stopwatch.StartNew();
+            while (gameRoom.Timer.ElapsedMilliseconds <= milliSeconds) ;
+            gameRoom.Timer.Stop();
         }
     }
 }

@@ -32,16 +32,12 @@ export class FacebookLogin extends React.Component {
                 clearInterval(interval);
             iterations++;
         }, 50);
-        //this.checkLoginStatus();
     }
 
     /**
      * Check login status
      */
     checkLoginStatus = () => {
-        if (this.FB === undefined) {
-            return;
-        }
         this.setState({
             showFacebookBtn: true
         });
@@ -52,7 +48,6 @@ export class FacebookLogin extends React.Component {
      * Check login status and call login api is user is not logged in
      */
     facebookLogin = () => {
-        console.log(window.FB);
         if (this.FB === undefined) {
             return;
         }

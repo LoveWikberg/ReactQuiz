@@ -1,7 +1,6 @@
 ﻿import React from 'react';
 import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { FacebookLogin } from '../../Facebook/facebookLogin';
-import FontAwesome from 'react-fontawesome';
 import '../../index.css';
 import './joinScreen.css';
 
@@ -57,9 +56,9 @@ export class JoinScreen extends React.Component {
                     onChange={(e) => this.changeRoomCode(e)}
                     max="4"
                 />
-                <Button className="watermelonBtn btnSpacing" onClick={() => this.joinRoom()} block>Join room</Button>
+                <Button className="watermelonBtn btnDesign" onClick={() => this.joinRoom()} block>Join room</Button>
                 <h4>Or...</h4>
-                <Button className="matteBtn btnSpacing" onClick={() => this.createRoom()} block>Create room</Button>
+                <Button className="matteBtn btnDesign" onClick={() => this.createRoom()} block>Create room</Button>
             </div>
         );
     }

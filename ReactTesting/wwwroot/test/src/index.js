@@ -21,15 +21,16 @@ class Game extends React.Component {
             players: [],
             roomCode: '',
             showLoader: true,
-            loaderText: "Connecting to the server"
+            loaderText: "Connecting to the server",
+            hostname: window && window.location && window.location.hostname
         };
     }
 
     componentDidMount = () => {
-        const hostname = window && window.location && window.location.hostname;
+        //const hostname = window && window.location && window.location.hostname;
         let backendHost;
 
-        if (hostname === 'localhost') {
+        if (this.state.hostname === 'localhost') {
             backendHost = 'http://localhost:50083/quiz';
         }
         else {
@@ -74,6 +75,9 @@ class Game extends React.Component {
             });
             this.state.hubConnection.on('gameWon', (players, winner) => {
                 this.renderGameEnd(players, "And the winner is... " + winner);
+            });
+            this.state.hubConnection.on('disalert', () => {
+                alert("disconnected");
             });
         });
     }
@@ -127,6 +131,7 @@ class Game extends React.Component {
                     roomCode={this.state.roomCode}
                     hubConnection={this.state.hubConnection}
                     players={this.state.players}
+                    hostname={this.state.hostname}
                 />
             </div>
             , document.getElementById('root'));
@@ -169,7 +174,6 @@ class Game extends React.Component {
     }
 
     onFacebookLogin = (loginStatus, resultObject) => {
-        console.log(resultObject);
         // Remove whitespaces
         //var name = resultObject.user.name.replace(/ /g, '');
         var name = resultObject.user.name.split(" ");

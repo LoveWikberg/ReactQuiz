@@ -19,7 +19,7 @@ export class Score extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            player: nextProps.players
+            players: nextProps.players
         });
     }
 
@@ -44,27 +44,27 @@ export class Score extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            this.state.players.map(function (player, index) {
+                            this.state.players.map(function (player, key) {
                                 {
                                     var classname = "";
                                     var trophy = "";
-                                    if (index === 0) {
+                                    if (key === 0) {
                                         classname = "podium gold";
                                         trophy = "trophy";
                                     }
-                                    else if (index === 1) {
+                                    else if (key === 1) {
                                         classname = "podium silver";
                                         trophy = "trophy";
                                     }
-                                    else if (index === 2) {
+                                    else if (key === 2) {
                                         classname = "podium bronze";
                                         trophy = "trophy";
                                     }
                                 }
                                 return (
-                                    <tr>
+                                    <tr key={key}>
                                         <th>
-                                            {index + 1}
+                                            {key + 1}
                                             <FontAwesome
                                                 name={trophy}
                                                 className={classname}
