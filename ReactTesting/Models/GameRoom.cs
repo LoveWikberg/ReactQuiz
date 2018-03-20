@@ -16,6 +16,7 @@ namespace ReactTesting.Data.Models
         public Quiz CurrentQuestion { get; set; }
         public int RoundCount { get; set; }
         public Stopwatch Timer { get; set; }
+        public bool IsMiniGame { get; set; }
 
     }
 }

@@ -18,6 +18,7 @@ export class MathInstructions extends React.Component {
                         questions={questions}
                         players={players}
                         roomCode={this.props.roomCode}
+                        name={this.props.name}
                     />
                 </div>
                 , document.getElementById('root'));

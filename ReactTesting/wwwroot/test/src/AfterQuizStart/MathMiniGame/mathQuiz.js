@@ -9,13 +9,12 @@ export class MathQuiz extends React.Component {
         this.state = {
             players: [],
             questions: [],
-            questionCount: 0
+            questionCount: 0,
+            disableButtons: false
         };
     }
 
     componentWillMount = () => {
-        console.log(this.props.questions);
-        console.log(this.props.questions[this.state.questionCount]);
         this.setState({
             questions: this.props.questions,
             players: this.props.players,
@@ -24,14 +23,16 @@ export class MathQuiz extends React.Component {
     }
 
     componentDidMount = () => {
-        this.props.hubConnection.on('updatePlayerProgres', (players) => {
+        this.props.hubConnection.on('updatePlayerProgress', (players) => {
             this.setState({
                 players: players
             });
-            console.log(this.state.players);
         });
-        this.props.hubConnection.on('testwin', () => {
-            alert("win!");
+        this.props.hubConnection.on('showMathQuizWinner', (players) => {
+            this.setState({
+                players: players,
+                disableButtons: true
+            });
         });
     }
 
@@ -55,16 +56,63 @@ export class MathQuiz extends React.Component {
         });
     }
 
+    printPlayers() {
+        let classname;
+        return this.state.players.map((player, key) => {
+            if (player.name !== this.props.name) {
+                classname = "";
+                if (player.mathQuizScore >= 15)
+                    classname = "slide";
+                return (
+                    <div className={classname}>
+                        <div key={key} className="text-center">{player.name} {player.mathQuizScore}/15</div>
+                        <Progress value={player.mathQuizScore * 6.66} />
+                    </div>
+                );
+            }
+        })
+    }
+
+    printSelf() {
+        let classname = "";
+        return this.state.players.map((player, key) => {
+            if (player.name === this.props.name) {
+                if (player.mathQuizScore >= 15)
+                    classname = "slide";
+                return (
+                    <div className={classname}>
+                        <div key={key} className="text-center">Your progress {player.mathQuizScore}/15</div>
+                        <Progress value={player.mathQuizScore * 6.66} />
+                    </div>
+                );
+            }
+        })
+    }
+
     render() {
         return (
             <div>
-                <h1>{this.state.questions[this.state.questionCount].question}</h1>
+                {
+                    this.printSelf()
+                    //this.state.players.map((player, key) => {
+                    //    if (player.name === this.props.name) {
+                    //        return (
+                    //            <div>
+                    //                <div key={key} className="text-center">Your progress {player.mathQuizScore}/15</div>
+                    //                <Progress value={player.mathQuizScore * 6.66} />
+                    //            </div>
+                    //        );
+                    //    }
+                    //})
+                }
+                <h1 className="questionSpacing">{this.state.questions[this.state.questionCount].question}</h1>
                 <ButtonGroup className="btnGroupWidth btnGroupSpacing" size="lg">
                     {
                         this.state.questions[this.state.questionCount].alternatives
                             .map((alternative, key) => {
                                 return (
                                     <Button
+                                        disabled={this.state.disableButtons}
                                         onClick={(e) => this.handleAnswer(e)}
                                         className="matteBtnGroup"
                                         key={key}
@@ -77,14 +125,7 @@ export class MathQuiz extends React.Component {
                     }
                 </ButtonGroup>
                 {
-                    this.state.players.map((player, key) => {
-                        return (
-                            <div>
-                                <div key={key} className="text-center">{player.mathQuizScore}/15</div>
-                                <Progress value={player.mathQuizScore * 6.66} />
-                            </div>
-                        );
-                    })
+                    this.printPlayers()
                 }
             </div >
         );

@@ -60,7 +60,7 @@ class Game extends React.Component {
             this.state.hubConnection.on("connectionFail", () => {
                 alert("The room doesn't excist or is full");
             });
-            this.state.hubConnection.on('showAnswers', (players) => {
+            this.state.hubConnection.on('showScore', (players) => {
                 this.renderCurrentScore(players);
             });
             this.state.hubConnection.on('gameDraw', (players, drawers) => {
@@ -169,6 +169,7 @@ class Game extends React.Component {
                 <MathInstructions
                     hubConnection={this.state.hubConnection}
                     roomCode={this.state.roomCode}
+                    name={this.state.name}
                 />
             </div>
             , document.getElementById('root'));

@@ -155,7 +155,7 @@ namespace ReactTesting.Hubs
             {
                 if (gameRoom.Questions.Count != 0)
                 {
-                    await ShowAnswers(gameRoom);
+                    await ShowScore(gameRoom);
                     gameRoom.RoundCount = 0;
                 }
                 else
@@ -204,15 +204,21 @@ namespace ReactTesting.Hubs
                 return false;
         }
 
-        async public Task ShowAnswers(GameRoom gameRoom)
+        async public Task ShowScore(GameRoom gameRoom)
         {
             await Clients.Group(gameRoom.GroupName)
-                .InvokeAsync("showAnswers", gameRoom.Players.OrderByDescending(p => p.Points));
+                .InvokeAsync("showScore", gameRoom.Players.OrderByDescending(p => p.Points));
             DelayGame(7000, gameRoom);
-            //if (gameRoom.RoundCount % 2 == 0)
-            await StartMiniGame(gameRoom);
-            //else
-            //await SendQuestion(gameRoom.GroupName);
+            if (gameRoom.IsMiniGame)
+            {
+                gameRoom.IsMiniGame = false;
+                await StartMiniGame(gameRoom);
+            }
+            else
+            {
+                gameRoom.IsMiniGame = true;
+                await SendQuestion(gameRoom.GroupName);
+            }
         }
 
         async Task StartMiniGame(GameRoom gameRoom)
@@ -223,7 +229,7 @@ namespace ReactTesting.Hubs
             {
                 case 0:
                     await Clients.Group(gameRoom.GroupName).InvokeAsync("mathQuizInstructions");
-                    DelayGame(3000, gameRoom);
+                    DelayGame(10000, gameRoom);
                     await Clients.Group(gameRoom.GroupName).InvokeAsync("startMathQuiz"
                         , GenerateMathQuiz(), gameRoom.Players);
                     break;
@@ -234,12 +240,23 @@ namespace ReactTesting.Hubs
         {
             string connId = Context.ConnectionId;
             var gameRoom = gameRooms.SingleOrDefault(g => g.GroupName == roomCode);
+            if (gameRoom.Players.Any(p => p.MathQuizScore >= 15))
+                return;
             var player = gameRoom.Players.SingleOrDefault(p => p.ConnectionId == connId);
             player.MathQuizScore++;
             if (player.MathQuizScore >= 15)
-                await Clients.Group(gameRoom.GroupName).InvokeAsync("testwin");
+            {
+                player.Points += 3;
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("showMathQuizWinner", gameRoom.Players);
+                DelayGame(5000, gameRoom);
+                for (int i = 0; i < gameRoom.Players.Count; i++)
+                {
+                    gameRoom.Players[i].MathQuizScore = 0;
+                }
+                await ShowScore(gameRoom);
+            }
             else
-                await Clients.Group(gameRoom.GroupName).InvokeAsync("updatePlayerProgres", gameRoom.Players);
+                await Clients.Group(gameRoom.GroupName).InvokeAsync("updatePlayerProgress", gameRoom.Players);
         }
 
         void SetPoints(GameRoom gameRoom)
@@ -259,7 +276,7 @@ namespace ReactTesting.Hubs
             var room = gameRooms.SingleOrDefault(r => r.GroupName == roomCode);
             if (room.Questions.Count == 0)
             {
-                await ShowAnswers(room);
+                await ShowScore(room);
             }
             else
             {
@@ -311,7 +328,7 @@ namespace ReactTesting.Hubs
                 List<string> alternatives = GenerateAlternatives(3, int.Parse(answer));
                 alternatives.Add(answer);
                 alternatives.Shuffle();
-                string question = $"{intOne} {mathOperator} {intTwo} = ?";
+                string question = $"{AddParanthesesIfNegative(intOne.ToString())} {mathOperator} {AddParanthesesIfNegative(intTwo.ToString())} = ?";
                 Quiz quiz = new Quiz
                 {
                     Question = question,
@@ -321,6 +338,13 @@ namespace ReactTesting.Hubs
                 mathquiz.Add(quiz);
             }
             return mathquiz;
+        }
+
+        string AddParanthesesIfNegative(string number)
+        {
+            if (number.Contains('-'))
+                return $"({number})";
+            return number;
         }
 
         List<string> GenerateAlternatives(int length, int excludedAlternative)
@@ -340,7 +364,6 @@ namespace ReactTesting.Hubs
             }
             return alternatives;
         }
-
         int Calculate(int numberOne, int numberTwo, char mathOperator)
         {
             switch (mathOperator)
