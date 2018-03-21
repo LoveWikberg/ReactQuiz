@@ -40,7 +40,7 @@ export class RoundEnd extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="fadeInComponent">
                 <h1>Current score</h1>
                 <h4>The next round starts in {this.state.timer}</h4>
                 <Score players={this.props.players} />

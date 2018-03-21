@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ReactTesting.Data;
+using ReactTesting.HubClasses;
 using ReactTesting.Hubs;
 using ReactTesting.Models;
 using ReactTesting.Models.Data;
@@ -28,6 +29,8 @@ namespace ReactTesting
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<DataManager>();
+            services.AddTransient<MathQuiz>();
+            services.AddTransient<MainQuiz>();
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder

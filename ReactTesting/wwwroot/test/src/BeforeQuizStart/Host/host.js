@@ -67,7 +67,7 @@ export class Host extends React.Component {
                     defaultValue="24"
                     onChange={(e) => this.setNumberOfQuestions(e.target.value)}
                 />
-                <select className="customSelect" onChange={(e) => this.setSelectedQuiz(e)}>
+                <select defaultValue={null} className="customSelect" onChange={(e) => this.setSelectedQuiz(e)}>
                     <option disabled selected>Select a quiz</option>
                     <option value="standard" >Standard quiz</option>
                     {

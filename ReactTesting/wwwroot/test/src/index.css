@@ -2,11 +2,27 @@
     background-color: #CCDFCB;
 }
 
+.fadeInComponent {
+    animation-name: fade-in;
+    animation-duration: 1s;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
 #root {
     background-color: #CCDFCB;
 }
 
-h1, h2, h3, h4, h5, p {
+h1, h2, h3, h4, h5, h6, p {
     font-family: Calibri, sans-serif !important;
     color: white !important;
 }
@@ -27,19 +43,88 @@ h1, h2, h3, h4, h5, p {
 .watermelonBtn {
     background-color: #FF6A5C !important;
     color: white !important;
-    border-radius:10px !important;
+    border-radius: 10px !important;
+    transition: 0.2s !important;
 }
 
 .greenBtn {
-    background-color: #0E8D00 !important;
+    background-color: #19d304 !important;
     color: white !important;
     border-radius: 10px !important;
+    transition: 0.2s !important;
 }
 
 .matteBtn {
     background-color: #414141 !important;
     color: white !important;
     border-radius: 10px !important;
+    transition: 0.2s !important;
 }
 
+.correct {
+    animation-name: correct;
+    animation-duration: 1s;
+}
 
+@keyframes correct {
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.inCorrect {
+    animation-name: inCorrect;
+    animation-duration: 1s;
+}
+
+@keyframes inCorrect {
+    10% {
+        margin-left: -5%;
+        margin-right: 5%;
+    }
+
+    20% {
+        margin-right: -5%;
+        margin-left: 5%;
+    }
+
+    30% {
+        margin-left: -4%;
+        margin-right: 4%;
+    }
+
+    40% {
+        margin-right: -4%;
+        margin-left: 4%;
+    }
+
+    50% {
+        margin-left: -3%;
+        margin-right: 3%;
+    }
+
+    60% {
+        margin-right: -3%;
+        margin-left: 3%;
+    }
+
+    70% {
+        margin-left: -2%;
+        margin-right: 2%;
+    }
+
+    80% {
+        margin-right: -2%;
+        margin-left: 2%;
+    }
+
+    90% {
+        margin-left: -1%;
+        margin-right: 1%;
+    }
+
+    100% {
+        margin-right: 0%;
+        margin-left: 0%;
+    }
+}

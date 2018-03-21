@@ -68,7 +68,7 @@ export class StartScreen extends React.Component {
     createShareLink() {
         var data = { 'roomcode': this.props.roomCode };
         var querystring = this.encodeQueryData(data);
-        var url = new URL(`https://dreamy-fermi-b142d0.netlify.com/?${querystring}`);
+        var url = `https://dreamy-fermi-b142d0.netlify.com/?${querystring}`;
         this.setState({
             inviteUrl: url
         });
@@ -76,7 +76,7 @@ export class StartScreen extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="fadeInComponent">
                 <h1 className="startTitle" >Room {this.props.roomCode}</h1>
 
                 {this.checkIfCreator()}

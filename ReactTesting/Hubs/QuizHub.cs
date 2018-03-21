@@ -2,6 +2,7 @@
 using ReactTesting.Data;
 using ReactTesting.Data.Models;
 using ReactTesting.ExtensionMethods;
+using ReactTesting.HubClasses;
 using ReactTesting.Models;
 using ReactTesting.Models.Data;
 using System;
@@ -17,11 +18,16 @@ namespace ReactTesting.Hubs
     {
         private readonly DataManager dataManager;
         private readonly FirebaseQuizManager firebaseQuizManager;
+        private readonly MathQuiz mathQuiz;
+        private readonly MainQuiz mainQuiz;
 
-        public QuizHub(DataManager dataManager, FirebaseQuizManager firebaseQuizManager)
+        public QuizHub(DataManager dataManager, FirebaseQuizManager firebaseQuizManager
+            , MathQuiz mathQuiz, MainQuiz mainQuiz)
         {
             this.dataManager = dataManager;
             this.firebaseQuizManager = firebaseQuizManager;
+            this.mathQuiz = mathQuiz;
+            this.mainQuiz = mainQuiz;
         }
 
         //public static List<Quiz> questions = new List<Quiz>();
@@ -54,7 +60,6 @@ namespace ReactTesting.Hubs
                 GroupName = roomCode,
                 Players = new List<Player>(),
                 RoundCount = 0,
-                //Timer = new Timer()
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
@@ -126,12 +131,12 @@ namespace ReactTesting.Hubs
         {
             if (gameRoom.Players.All(p => p.HasAnswered))
             {
-                Clients.All.InvokeAsync("nextQuestion");
+                Clients.Group(gameRoom.GroupName).InvokeAsync("nextQuestion");
                 for (int i = 0; i < gameRoom.Players.Count; i++)
                 {
                     gameRoom.Players[i].HasAnswered = false;
                 }
-                DelayGame(2000, gameRoom);
+                mainQuiz.DelayGame(2000, ref gameRoom);
                 HandlePlayersAnswersAndContinue(gameRoom);
             }
         }
@@ -150,7 +155,7 @@ namespace ReactTesting.Hubs
         async void HandlePlayersAnswersAndContinue(GameRoom gameRoom)
         {
             gameRoom.RoundCount += 1;
-            SetPoints(gameRoom);
+            mainQuiz.SetPoints(ref gameRoom);
             if (gameRoom.RoundCount >= 3)
             {
                 if (gameRoom.Questions.Count != 0)
@@ -178,7 +183,7 @@ namespace ReactTesting.Hubs
         async Task GameEnded(GameRoom gameRoom)
         {
             int highestScore = gameRoom.Players.Max(p => p.Points);
-            if (IsDraw(highestScore, gameRoom.Players))
+            if (mainQuiz.IsDraw(highestScore, gameRoom.Players))
             {
                 string[] drawers = gameRoom.Players.Where(p => p.Points == highestScore)
                     .Select(p => p.Name).ToArray();
@@ -194,21 +199,11 @@ namespace ReactTesting.Hubs
             gameRooms.Remove(gameRoom);
         }
 
-        bool IsDraw(int score, List<Player> players)
-        {
-            var playersWithHighestScore = players
-              .Where(p => p.Points == score);
-            if (playersWithHighestScore.Count() > 1)
-                return true;
-            else
-                return false;
-        }
-
         async public Task ShowScore(GameRoom gameRoom)
         {
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showScore", gameRoom.Players.OrderByDescending(p => p.Points));
-            DelayGame(7000, gameRoom);
+            mainQuiz.DelayGame(7000, ref gameRoom);
             if (gameRoom.IsMiniGame)
             {
                 gameRoom.IsMiniGame = false;
@@ -229,9 +224,9 @@ namespace ReactTesting.Hubs
             {
                 case 0:
                     await Clients.Group(gameRoom.GroupName).InvokeAsync("mathQuizInstructions");
-                    DelayGame(10000, gameRoom);
+                    mainQuiz.DelayGame(10000, ref gameRoom);
                     await Clients.Group(gameRoom.GroupName).InvokeAsync("startMathQuiz"
-                        , GenerateMathQuiz(), gameRoom.Players);
+                        , mathQuiz.GenerateMathQuiz(), gameRoom.Players);
                     break;
             }
         }
@@ -248,7 +243,7 @@ namespace ReactTesting.Hubs
             {
                 player.Points += 3;
                 await Clients.Group(gameRoom.GroupName).InvokeAsync("showMathQuizWinner", gameRoom.Players);
-                DelayGame(5000, gameRoom);
+                mainQuiz.DelayGame(5000, ref gameRoom);
                 for (int i = 0; i < gameRoom.Players.Count; i++)
                 {
                     gameRoom.Players[i].MathQuizScore = 0;
@@ -257,18 +252,6 @@ namespace ReactTesting.Hubs
             }
             else
                 await Clients.Group(gameRoom.GroupName).InvokeAsync("updatePlayerProgress", gameRoom.Players);
-        }
-
-        void SetPoints(GameRoom gameRoom)
-        {
-            foreach (var player in gameRoom.Players)
-            {
-                if (player.Answer == gameRoom.CurrentQuestion.CorrectAnswer)
-                {
-                    player.Points += 1;
-                    player.Answer = "";
-                }
-            }
         }
 
         public async Task SendQuestion(string roomCode)
@@ -280,100 +263,13 @@ namespace ReactTesting.Hubs
             }
             else
             {
-                room.CurrentQuestion = GetRandomQuestion(room.Questions);
+                room.CurrentQuestion = mainQuiz.GetRandomQuestion(room.Questions);
                 await Clients.Group(room.GroupName).InvokeAsync("sendQuestion", room.CurrentQuestion);
             }
         }
 
-        Quiz GetRandomQuestion(List<Quiz> questions)
-        {
-            Random random = new Random();
-            int index = random.Next(0, questions.Count - 1);
+        
 
-            var alternatives = questions[index].IncorrectAnswers
-                .Append(questions[index].CorrectAnswer).ToList();
-            alternatives.Shuffle();
-
-            Quiz question = new Quiz
-            {
-                Category = questions[index].Category,
-                CorrectAnswer = questions[index].CorrectAnswer,
-                Difficulty = questions[index].Difficulty,
-                Question = questions[index].Question,
-                Type = questions[index].Type,
-                Alternatives = alternatives
-            };
-            questions.RemoveAt(index);
-            return question;
-        }
-        void DelayGame(int milliSeconds, GameRoom gameRoom)
-        {
-            gameRoom.Timer = Stopwatch.StartNew();
-            while (gameRoom.Timer.ElapsedMilliseconds <= milliSeconds) ;
-            gameRoom.Timer.Stop();
-        }
-
-        public List<Quiz> GenerateMathQuiz()
-        {
-            List<Quiz> mathquiz = new List<Quiz>();
-            Random random = new Random();
-            char[] operators = new char[] { '+', '-' };
-            for (int i = 0; i < 50; i++)
-            {
-                int intOne = random.Next(-10, 10);
-                int intTwo = random.Next(-10, 10);
-                int index = random.Next(0, 1);
-                char mathOperator = operators[index];
-                string answer = Calculate(intOne, intTwo, mathOperator).ToString();
-                List<string> alternatives = GenerateAlternatives(3, int.Parse(answer));
-                alternatives.Add(answer);
-                alternatives.Shuffle();
-                string question = $"{AddParanthesesIfNegative(intOne.ToString())} {mathOperator} {AddParanthesesIfNegative(intTwo.ToString())} = ?";
-                Quiz quiz = new Quiz
-                {
-                    Question = question,
-                    CorrectAnswer = answer,
-                    Alternatives = alternatives
-                };
-                mathquiz.Add(quiz);
-            }
-            return mathquiz;
-        }
-
-        string AddParanthesesIfNegative(string number)
-        {
-            if (number.Contains('-'))
-                return $"({number})";
-            return number;
-        }
-
-        List<string> GenerateAlternatives(int length, int excludedAlternative)
-        {
-            Random random = new Random();
-            List<string> alternatives = new List<string>();
-            for (int i = 0; i < length; i++)
-            {
-                int randomAlternative;
-                do
-                {
-                    randomAlternative = random.Next(-20, 20);
-
-                }
-                while (randomAlternative == excludedAlternative);
-                alternatives.Add(randomAlternative.ToString());
-            }
-            return alternatives;
-        }
-        int Calculate(int numberOne, int numberTwo, char mathOperator)
-        {
-            switch (mathOperator)
-            {
-                case '+':
-                    return numberOne + numberTwo;
-                case '-':
-                    return numberTwo - numberTwo;
-            }
-            throw new Exception("Invalid operator");
-        }
+       
     }
 }

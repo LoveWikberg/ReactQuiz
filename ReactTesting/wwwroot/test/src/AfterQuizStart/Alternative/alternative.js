@@ -23,12 +23,12 @@ export class Alternative extends React.Component {
     sendAnswer(e) {
         if (this.props.alt === this.props.correctAnswer) {
             this.setState({
-                btnClass: "greenBtn"
+                btnClass: "greenBtn correct"
             });
         }
         else {
             this.setState({
-                btnClass: "watermelonBtn"
+                btnClass: "watermelonBtn inCorrect"
             });
         }
         this.props.disablebuttons();

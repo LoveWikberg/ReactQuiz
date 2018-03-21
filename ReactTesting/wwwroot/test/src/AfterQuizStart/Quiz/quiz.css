@@ -7,3 +7,29 @@
     margin-top: 5%;
 }
 
+.fadeinleft0{
+    animation:slide-left;
+    animation-delay: 0s;
+}
+.fadeinleft1 {
+    animation: slide-left;
+    animation-delay: 0.2s;
+}
+.fadeinleft2 {
+    animation: slide-left;
+    animation-delay: 0.4s;
+}
+.fadeinleft3 {
+    animation: slide-left;
+    animation-delay: 0.6s;
+}
+
+@keyframes slide-left{
+    0% {
+        margin-left: -100% !important;
+        /*margin-right: 5%;*/
+    }
+    100% {
+        margin-left: 0% !important;
+    }
+}

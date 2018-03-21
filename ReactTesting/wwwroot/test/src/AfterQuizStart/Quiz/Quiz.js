@@ -12,7 +12,7 @@ export class Quiz extends React.Component {
             mainText: "",
             progress: 100,
             interval: null,
-            progressColor: "info"
+            progressColor: "info",
         };
     }
 
@@ -24,6 +24,14 @@ export class Quiz extends React.Component {
         this.moveProgressBar();
     }
 
+    componentDidMount = () => {
+        this.props.hubConnection.on("nextQuestion", () => {
+            this.setState({
+                mainText: "Next question is comming up!"
+            });
+        });
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({
             mainText: nextProps.question.question,
@@ -31,14 +39,6 @@ export class Quiz extends React.Component {
             progressColor: "info"
         });
         this.moveProgressBar();
-    }
-
-    componentDidMount = () => {
-        this.props.hubConnection.on("nextQuestion", () => {
-            this.setState({
-                mainText: "Next question is comming up!"
-            });
-        });
     }
 
     disableButtonsAndResetTimer = () => {
@@ -52,7 +52,7 @@ export class Quiz extends React.Component {
 
     moveProgressBar = () => {
         var progress;
-        
+
         var interval = setInterval(() => {
             progress = this.state.progress - 1;
             this.setState({
@@ -66,7 +66,7 @@ export class Quiz extends React.Component {
                 this.disableButtonsAndResetTimer();
                 this.props.hubConnection.invoke("collectAnswer", " ", this.props.roomCode);
             }
-        }, 150);
+        }, 170);
         this.setState({
             interval: interval
         });
@@ -74,7 +74,7 @@ export class Quiz extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="fadeInComponent">
                 <p className="category">{this.props.question.category}</p>
                 <h5 className="question">{this.state.mainText}</h5>
                 <Progress animated color={this.state.progressColor} value={this.state.progress} />

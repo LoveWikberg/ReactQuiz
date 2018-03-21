@@ -10,7 +10,7 @@ export class GameEnd extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="fadeInComponent">
                 <h2>
                     {this.props.endMessage}
                 </h2>

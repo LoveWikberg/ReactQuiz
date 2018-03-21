@@ -47,8 +47,13 @@ export class MathQuiz extends React.Component {
     handleAnswer(e) {
         const correctAnswer = this.state.questions[this.state.questionCount].correct_answer;
         if (e.target.value === correctAnswer) {
-            this.props.hubConnection.invoke('collectMathAnswer', this.props.roomCode)
+            this.props.hubConnection.invoke('collectMathAnswer', this.props.roomCode).then(this.printNextQuestion());
         }
+        else
+            this.printNextQuestion();
+    }
+
+    printNextQuestion() {
         let questionCount = this.state.questionCount;
         questionCount++;
         this.setState({
@@ -70,7 +75,7 @@ export class MathQuiz extends React.Component {
                     </div>
                 );
             }
-        })
+        });
     }
 
     printSelf() {
@@ -80,30 +85,20 @@ export class MathQuiz extends React.Component {
                 if (player.mathQuizScore >= 15)
                     classname = "slide";
                 return (
-                    <div className={classname}>
-                        <div key={key} className="text-center">Your progress {player.mathQuizScore}/15</div>
+                    <div key={key} className={classname}>
+                        <div className="text-center">Your progress {player.mathQuizScore}/15</div>
                         <Progress value={player.mathQuizScore * 6.66} />
                     </div>
                 );
             }
-        })
+        });
     }
 
     render() {
         return (
-            <div>
+            <div className="fadeInComponent">
                 {
                     this.printSelf()
-                    //this.state.players.map((player, key) => {
-                    //    if (player.name === this.props.name) {
-                    //        return (
-                    //            <div>
-                    //                <div key={key} className="text-center">Your progress {player.mathQuizScore}/15</div>
-                    //                <Progress value={player.mathQuizScore * 6.66} />
-                    //            </div>
-                    //        );
-                    //    }
-                    //})
                 }
                 <h1 className="questionSpacing">{this.state.questions[this.state.questionCount].question}</h1>
                 <ButtonGroup className="btnGroupWidth btnGroupSpacing" size="lg">

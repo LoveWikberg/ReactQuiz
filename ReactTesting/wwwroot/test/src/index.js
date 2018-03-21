@@ -8,7 +8,6 @@ import { StartScreen } from './BeforeQuizStart/StartScreen/startScreen';
 import { JoinScreen } from './BeforeQuizStart/JoinScreen/joinScreen';
 import { Loader } from './BeforeQuizStart/Loader/loader';
 import { MathInstructions } from './AfterQuizStart/MathMiniGame/mathInstructions';
-import { MathQuiz } from './AfterQuizStart/MathMiniGame/mathQuiz';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -25,6 +24,7 @@ class Game extends React.Component {
             showLoader: true,
             loaderText: "Connecting to the server",
             hostname: window && window.location && window.location.hostname
+            //fadeInAnimation: "fadeInComponent"
         };
     }
 
@@ -120,7 +120,9 @@ class Game extends React.Component {
     renderGameEnd(players, endMessage) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <GameEnd endMessage={endMessage} players={players} />
+                <div className="fadeInComponent">
+                    <GameEnd endMessage={endMessage} players={players} />
+                </div>
             </div>
             , document.getElementById('root'));
     }
@@ -128,13 +130,13 @@ class Game extends React.Component {
     renderStartScreen(isCreator) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <StartScreen
-                    isCreator={isCreator}
-                    roomCode={this.state.roomCode}
-                    hubConnection={this.state.hubConnection}
-                    players={this.state.players}
-                    hostname={this.state.hostname}
-                />
+                    <StartScreen
+                        isCreator={isCreator}
+                        roomCode={this.state.roomCode}
+                        hubConnection={this.state.hubConnection}
+                        players={this.state.players}
+                        hostname={this.state.hostname}
+                    />
             </div>
             , document.getElementById('root'));
     }
@@ -142,11 +144,13 @@ class Game extends React.Component {
     renderCurrentScore(players) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <RoundEnd
-                    players={players}
-                    roomCode={this.state.roomCode}
-                    hubConnection={this.state.hubConnection}
-                />
+                <div className="fadeInComponent">
+                    <RoundEnd
+                        players={players}
+                        roomCode={this.state.roomCode}
+                        hubConnection={this.state.hubConnection}
+                    />
+                </div>
             </div>
             , document.getElementById('root'));
     }
@@ -154,11 +158,13 @@ class Game extends React.Component {
     renderQuestion(question) {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <Quiz
-                    question={question}
-                    hubConnection={this.state.hubConnection}
-                    roomCode={this.state.roomCode}
-                />
+                <div className="fadeInComponent">
+                    <Quiz
+                        question={question}
+                        hubConnection={this.state.hubConnection}
+                        roomCode={this.state.roomCode}
+                    />
+                </div>
             </div>
             , document.getElementById('root'));
     }
@@ -166,11 +172,13 @@ class Game extends React.Component {
     renderMathQuizInstructions = () => {
         ReactDOM.hydrate(
             <div className="tealGameContainer">
-                <MathInstructions
-                    hubConnection={this.state.hubConnection}
-                    roomCode={this.state.roomCode}
-                    name={this.state.name}
-                />
+                <div className="fadeInComponent">
+                    <MathInstructions
+                        hubConnection={this.state.hubConnection}
+                        roomCode={this.state.roomCode}
+                        name={this.state.name}
+                    />
+                </div>
             </div>
             , document.getElementById('root'));
     }
@@ -203,17 +211,19 @@ class Game extends React.Component {
 
     render() {
         return (
-            <div>
+            <div >
                 {this.state.showLoader ? <Loader text={this.state.loaderText} /> : null}
                 <div className="tealGameContainer">
-                    <JoinScreen
-                        changeName={this.changeName}
-                        changeRoomCode={this.changeRoomCode}
-                        hubConnection={this.state.hubConnection}
-                        name={this.state.name}
-                        roomCode={this.state.roomCode}
-                        onLogin={this.onFacebookLogin}
-                    />
+                    <div className="fadeInComponent">
+                        <JoinScreen
+                            changeName={this.changeName}
+                            changeRoomCode={this.changeRoomCode}
+                            hubConnection={this.state.hubConnection}
+                            name={this.state.name}
+                            roomCode={this.state.roomCode}
+                            onLogin={this.onFacebookLogin}
+                        />
+                    </div>
                 </div>
             </div>
         );
