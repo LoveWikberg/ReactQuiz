@@ -59,7 +59,8 @@ namespace ReactTesting.Hubs
             {
                 GroupName = roomCode,
                 Players = new List<Player>(),
-                RoundCount = 0,
+                QuestionCount = 0,
+                RoundCount = 1
             };
             gameRooms.Add(newRoom);
             AddPlayer(name, roomCode);
@@ -154,14 +155,14 @@ namespace ReactTesting.Hubs
 
         async void HandlePlayersAnswersAndContinue(GameRoom gameRoom)
         {
-            gameRoom.RoundCount += 1;
+            gameRoom.QuestionCount += 1;
             mainQuiz.SetPoints(ref gameRoom);
-            if (gameRoom.RoundCount >= 3)
+            if (gameRoom.QuestionCount >= 3)
             {
                 if (gameRoom.Questions.Count != 0)
                 {
                     await ShowScore(gameRoom);
-                    gameRoom.RoundCount = 0;
+                    gameRoom.QuestionCount = 0;
                 }
                 else
                 {
@@ -201,17 +202,16 @@ namespace ReactTesting.Hubs
 
         async public Task ShowScore(GameRoom gameRoom)
         {
+            gameRoom.RoundCount++;
             await Clients.Group(gameRoom.GroupName)
                 .InvokeAsync("showScore", gameRoom.Players.OrderByDescending(p => p.Points));
             mainQuiz.DelayGame(7000, ref gameRoom);
-            if (gameRoom.IsMiniGame)
+            if (gameRoom.RoundCount % 3 == 0)
             {
-                gameRoom.IsMiniGame = false;
                 await StartMiniGame(gameRoom);
             }
             else
             {
-                gameRoom.IsMiniGame = true;
                 await SendQuestion(gameRoom.GroupName);
             }
         }
@@ -268,8 +268,8 @@ namespace ReactTesting.Hubs
             }
         }
 
-        
 
-       
+
+
     }
 }

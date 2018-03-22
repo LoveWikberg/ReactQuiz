@@ -38,7 +38,7 @@ export class Alternative extends React.Component {
     render() {
         return (
             <Button
-                className={this.state.btnClass}
+                className={`${this.state.btnClass} ${this.props.altClass}`}
                 size="lg"
                 onClick={() => this.sendAnswer()}
                 disabled={this.props.isDisabled}

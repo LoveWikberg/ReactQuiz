@@ -8,16 +8,19 @@ export class Quiz extends React.Component {
         super(props);
 
         this.state = {
+            question: [],
             isDisabled: null,
             mainText: "",
             progress: 100,
             interval: null,
             progressColor: "info",
+            altClass: ""
         };
     }
 
     componentWillMount() {
         this.setState({
+            question: this.props.question,
             mainText: this.props.question.question,
             isDisabled: false
         });
@@ -36,8 +39,24 @@ export class Quiz extends React.Component {
         this.setState({
             mainText: nextProps.question.question,
             isDisabled: false,
-            progressColor: "info"
+            progressColor: "info",
+            altClass: "slideFromRight"
         });
+
+        var timeout = setTimeout(() => {
+            this.setState({
+                question: this.props.question,
+                altClass: "slideFromLeft"
+            });
+            clearInterval(timeout);
+        }, 500);
+
+        var timeoutTwo = setTimeout(() => {
+            this.setState({
+                altClass: ""
+            });
+        }, 1000)
+
         this.moveProgressBar();
     }
 
@@ -75,12 +94,12 @@ export class Quiz extends React.Component {
     render() {
         return (
             <div className="fadeInComponent">
-                <p className="category">{this.props.question.category}</p>
-                <h5 className="question">{this.state.mainText}</h5>
+                <p className="category">{this.state.question.category}</p>
+                <h5 className={`question `} onClick={(e) => console.log(e.target.className)}>{this.state.mainText}</h5>
                 <Progress animated color={this.state.progressColor} value={this.state.progress} />
                 <br />
                 {
-                    this.props.question.alternatives.map((alt, key) => {
+                    this.state.question.alternatives.map((alt, key) => {
                         return (
                             <Alternative
                                 key={key}
@@ -89,7 +108,8 @@ export class Quiz extends React.Component {
                                 roomCode={this.props.roomCode}
                                 isDisabled={this.state.isDisabled}
                                 disablebuttons={() => this.disableButtonsAndResetTimer()}
-                                correctAnswer={this.props.question.correct_answer}
+                                correctAnswer={this.state.question.correct_answer}
+                                altClass={this.state.altClass}
                             />
                         );
                     })

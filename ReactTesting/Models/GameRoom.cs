@@ -14,8 +14,9 @@ namespace ReactTesting.Data.Models
         public List<Quiz> Questions { get; set; }
         public List<Player> Players { get; set; }
         public Quiz CurrentQuestion { get; set; }
-        public int RoundCount { get; set; }
+        public int QuestionCount { get; set; }
         public Stopwatch Timer { get; set; }
+        public int RoundCount { get; set; }
         public bool IsMiniGame { get; set; }
 
     }
